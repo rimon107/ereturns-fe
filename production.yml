@@ -1,0 +1,11 @@
+version: '3.7'
+
+services:
+
+  prod:
+    container_name: fe-prod
+    build:
+      context: .
+      dockerfile: ./compose/production/Dockerfile
+    ports:
+      - '1337:80'
