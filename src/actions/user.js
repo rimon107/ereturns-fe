@@ -36,7 +36,6 @@ export const updateUserStatusAfterLogin = (id) => async (dispatch, getState) => 
 
   try {
     const res = await api.patch(`users/${id}/`, body, requestOptions(getState));
-    debugger
     dispatch({
       type: USER_LOADED,
       payload: res.data

@@ -10,12 +10,8 @@ const User = ({match}) => {
   const dispatch = useDispatch();
   // const user = usersData.find( user => user.id.toString() === match.params.id)
   const user = useSelector(state => state.user.user)
-  console.log(user);
   const userDetails = user ? Object.entries(user) : 
     [['',  "No user found"]]
-    // console.log(userDetails);
-
-  // console.log(user);
 
   useEffect(() => {
     dispatch(profile(match.params.id));
@@ -27,20 +23,29 @@ const User = ({match}) => {
         <CCard>
           <CCardHeader>
             {/* User id: {match.params.id} */}
-            User Details
+            <strong>User Details</strong>
           </CCardHeader>
           <CCardBody>
               <table className="table table-striped table-hover">
                 <tbody>
                   {
                     userDetails?.map(([key, value], index) => {
-                      return (
+                      if(key=='name'||key=='email'||key=='designation'||key=='department'||key=='mobile')
+                        return (
+                          <tr key={index.toString()}>
+                            <td>{`${key}`}</td>
+                            <td><strong>{value?.toString()}</strong></td>
+                          </tr>
+                        )
+                      if(key=='financial_institute'||key=='branch')
+                       return (
                         <tr key={index.toString()}>
-                          <td>{`${key}`}</td>
-                          <td><strong>{value?.toString()}</strong></td>
+                        <td>{`${key}`}</td>
+                        <td><strong>{value.name?.toString()}</strong></td>
                         </tr>
-                      )
-                    })
+
+                       )
+                      })
                   }
                 </tbody>
               </table>
