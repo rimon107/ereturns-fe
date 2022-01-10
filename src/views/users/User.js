@@ -4,6 +4,7 @@ import { CCard, CCardBody, CCardHeader, CCol, CRow } from '@coreui/react'
 // import CIcon from '@coreui/icons-react'
 
 import { profile } from '../../actions/user';
+import { capitalize } from 'lodash';
 
 
 const User = ({match}) => {
@@ -33,15 +34,22 @@ const User = ({match}) => {
                       if(key=='name'||key=='email'||key=='designation'||key=='department'||key=='mobile')
                         return (
                           <tr key={index.toString()}>
-                            <td>{`${key}`}</td>
+                            <td>{capitalize(key)}</td>
                             <td><strong>{value?.toString()}</strong></td>
                           </tr>
                         )
-                      if(key=='financial_institute'||key=='branch')
+                      if(key=='financial_institute')
                        return (
                         <tr key={index.toString()}>
-                        <td>{`${key}`}</td>
+                        <td>Financial Institute</td>
                         <td><strong>{value.name?.toString()}</strong></td>
+                        </tr>
+                       )
+                      if(key=='branch')
+                       return (
+                         <tr key={index.toString()}>
+                         <td>{capitalize(key)}</td>
+                         <td><strong>{value.name?.toString()}</strong></td>
                         </tr>
 
                        )
