@@ -79,7 +79,6 @@ export const register = (financial_institute_type_id, financial_institute_id,
   const body = JSON.stringify({ financial_institute_type_id, financial_institute_id, 
                                 branch_id, employee_name, password, designation, 
                                 department, email, mobile, phone, report_type });
-  console.log(body)
   try {
     const res = await api.post('registration/add/', body, config);
     dispatch({

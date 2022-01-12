@@ -144,8 +144,26 @@ const Register = () => {
 
     e.target.reset();
     setFormData({ ...formData,
-      // phone: "" 
+      employee_name: "",
+      password: "",
+      confirm_password: "",
+      designation: "",
+      department: "",
+      email: "",
+      mobile: "",
+      phone: "",
+      sbs_code: "",
+      report_type: "",
+      fi_id: "",
+      branch_id: "",
     });
+
+    setBranch(false);
+    setHo(false);
+    setSbsCode(false);
+    setNewBranch(false);
+    setReportTypeBranchChecked(false);
+    setReportTypeHOChecked(false);
 
   };
 
