@@ -1,21 +1,29 @@
-import React from 'react'
-import { useSelector } from 'react-redux'
+import React, { useEffect } from 'react'
+import { useSelector, useDispatch } from 'react-redux'
 import {
   CWidgetDropdown,
   CRow,
   CCol
 } from '@coreui/react'
 import ChartLineSimple from '../charts/ChartLineSimple'
+import { members } from "../../actions/user";
 
 const DashboardWidgetsDropdown = () => {
-  const members = useSelector(state => state.auth.members)
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(members());
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+
+
+  const member = useSelector(state => state.auth.members)
 
   return (
     <CRow>
       <CCol sm="6" lg="3">
         <CWidgetDropdown
           color="gradient-primary"
-          header={members?.active.toString()}
+          header={member?.active.toString()}
           text="Active Members"
           footerSlot={
             <ChartLineSimple
@@ -33,7 +41,7 @@ const DashboardWidgetsDropdown = () => {
       <CCol sm="6" lg="3">
         <CWidgetDropdown
           color="gradient-info"
-          header={members?.online.toString()}
+          header={member?.online.toString()}
           text="Members online"
           footerSlot={
             <ChartLineSimple
@@ -55,7 +63,7 @@ const DashboardWidgetsDropdown = () => {
       <CCol sm="6" lg="3">
         <CWidgetDropdown
           color="gradient-warning"
-          header={members?.inactive.toString()}
+          header={member?.inactive.toString()}
           text="Members Inactive"
           footerSlot={
             <ChartLineSimple

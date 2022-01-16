@@ -39,7 +39,11 @@ export const login = (username, password) => async dispatch => {
 export const logout = () => async (dispatch, getState) => {
 
   const auth = getState().auth;
-  dispatch(updateUserStatusAfterLogout(auth.user.id));
+  try {
+    dispatch(updateUserStatusAfterLogout(auth.user.id));
+  } catch (err) {
+    
+  }
   const body = {
     refresh: auth.refresh
   }

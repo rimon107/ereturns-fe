@@ -32,7 +32,7 @@ export const loadUser = () => async (dispatch, getState) => {
 
 // UPDATE USER STATUS AFTER LOGIN
 export const updateUserStatusAfterLogin = (id) => async (dispatch, getState) => {
-  const body = JSON.stringify({ status: "Online" });
+  const body = JSON.stringify({ id: id, status: "Online" });
 
   try {
     const res = await api.patch(`users/${id}/`, body, requestOptions(getState));
@@ -54,7 +54,7 @@ export const updateUserStatusAfterLogin = (id) => async (dispatch, getState) => 
 // UPDATE USER STATUS AFTER LOGIN
 export const updateUserStatusAfterLogout = (id) => async (dispatch, getState) => {
   
-  const body = JSON.stringify({ status: "Offline" });
+  const body = JSON.stringify({ id: id, status: "Offline" });
 
   try {
     await api.patch(`users/${id}/`, body, requestOptions(getState));
@@ -119,5 +119,22 @@ export const checkUserCanBeCreated = (fi_id, branch_id) => async (dispatch, getS
   }
   catch (err) {
     return null;
+  }
+}
+
+// LOAD USER PROFILE
+export const changePassword = () => async (dispatch, getState) => {
+
+  try{
+    const res = await api.get(`users/me/change-password`, requestOptions(getState));
+    dispatch({
+      type: USER_LIST_LOAD,
+      payload: res.data
+    });
+  }
+  catch (err) {
+    dispatch({
+      type: USER_LIST_LOAD_ERROR
+    });
   }
 }
