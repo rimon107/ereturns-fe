@@ -6,6 +6,7 @@ const Colors = React.lazy(() => import('./views/theme/colors/Colors'));
 const Typography = React.lazy(() => import('./views/theme/typography/Typography'));
 // const Users = React.lazy(() => import('./views/users/Users'));
 const User = React.lazy(() => import('./views/users/User'));
+const ChangePassword = React.lazy(() => import('./views/users/ChangePassword'));
 const Rit = React.lazy(() => import('./views/rit/RitDetails'));
 const RitUploadStatus = React.lazy(() => import('./views/rit/RitUploadStatus'));
 const RitDownload = React.lazy(() => import('./views/rit/RitDownload'));
@@ -25,6 +26,7 @@ const routes = [
   // { path: '/users', exact: true,  name: 'Users', component: Users },
   { path: '/users', exact: true,  name: 'Users', component: UserList },
   { path: '/user/add', exact: true,  name: 'Add User', component: AddUser },
+  { path: '/user/change-password', exact: true,  name: 'Change Password', component: ChangePassword },
   { path: '/users/:id', exact: true, name: 'User Details', component: User },
   { path: '/rit', exact: true,  name: 'Rit', component: Rit },
   { path: '/rit/upload-status', name: 'Rit Upload Status', component: RitUploadStatus },

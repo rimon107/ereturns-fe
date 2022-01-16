@@ -45,7 +45,7 @@ const TheHeaderDropdown = ({ auth: { isAuthenticated, user }, logout, profile })
         >
           <strong>Account</strong>
         </CDropdownItem>
-        <CDropdownItem>
+        <CDropdownItem href={`#/user/change-password`}>
           <CIcon name="cil-settings" className="mfe-2" />
           Change Password
         </CDropdownItem>
