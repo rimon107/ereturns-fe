@@ -88,6 +88,10 @@ const Register = () => {
         initializeReportType()
         setHo(false);
         setBranch(false);
+      } else {
+        initializeReportType()
+        setHo(false);
+        setBranch(false);
       }
     }
     if(e.target.name==="branch_id"){
@@ -98,29 +102,45 @@ const Register = () => {
   }
 
   const onChangeReportTypeBranch = e => {
-    setReportTypeBranchChecked(true);
-    setReportTypeHOChecked(false);
-    setHo(false);
-    setBranch(true);
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    if(!fi_id){
+      setModalData("Please select Bank/NBFI first.")
+      setModal(true)
+    } else{
+      setReportTypeBranchChecked(true);
+      setReportTypeHOChecked(false);
+      setHo(false);
+      setBranch(true);
+      setFormData({ ...formData, [e.target.name]: e.target.value });
+    }
   }
 
   const onChangeReportTypeHO = e => {
-    setReportTypeBranchChecked(false);
-    setReportTypeHOChecked(true);
 
-    setBranch(false);
-    setSbsCode(false);
-    setNewBranch(false);
-
-    const ho_users = users["ho_users"]
-    if(ho_users < 6){
-      setHo(true);
-      setFormData({ ...formData, [e.target.name]: e.target.value });
-    } else {
-      setModalData("Head Office user limit exceeded.")
+    if(!fi_id){
+      setModalData("Please select Bank/NBFI first.")
       setModal(true)
-      console.log("HO user limit exceeded.")
+    } else {
+
+      setReportTypeBranchChecked(false);
+      setReportTypeHOChecked(true);
+
+      setBranch(false);
+      setSbsCode(false);
+      setNewBranch(false);
+
+      const ho_users = users? users["ho_users"] : 0
+      if(ho_users===0){
+        setModalData("Data is not loaded correctly. Please try again.")
+        setModal(true)
+      }
+      else if(ho_users> 0 && ho_users < 6){
+        setHo(true);
+        setFormData({ ...formData, [e.target.name]: e.target.value });
+      } else {
+        setModalData("Head Office user limit exceeded.")
+        setModal(true)
+        console.log("HO user limit exceeded.")
+      }
     }
   }
 
