@@ -25,7 +25,7 @@ const UserUpdate = ({match}) => {
   const dispatch = useDispatch();
   const history = useHistory()
   const users = useSelector(state => state.user.users)
-  const user = users.find( user => user.id.toString() === match.params.id)
+  const user = users?.find( user => user.id.toString() === match.params.id)
 
   const [modal, setModal] = useState(false);
 
