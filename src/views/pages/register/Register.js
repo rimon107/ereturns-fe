@@ -16,7 +16,10 @@ import {
   CInputGroupText,
   CRow,
   CInputRadio,
-  CLink
+  CLink,
+  CModal,
+  CModalBody,
+  CModalFooter
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import { loadInstitutes, loadBranches, loadInstituteUserCount } from "../../../actions/institute";
@@ -48,6 +51,9 @@ const Register = () => {
     fi_id: "",
     branch_id: "",
   });
+
+  const [modal, setModal] = useState(false);
+  const [modalData, setModalData] = useState("");
 
   const { employee_name, password, confirm_password, 
     designation, department, email, mobile, phone, sbs_code,
@@ -108,10 +114,12 @@ const Register = () => {
     setNewBranch(false);
 
     const ho_users = users["ho_users"]
-    if(ho_users < 2){
+    if(ho_users < 6){
       setHo(true);
       setFormData({ ...formData, [e.target.name]: e.target.value });
     } else {
+      setModalData("Head Office user limit exceeded.")
+      setModal(true)
       console.log("HO user limit exceeded.")
     }
   }
@@ -124,9 +132,11 @@ const Register = () => {
     let branch_info = branches.filter( br => br.id.toString()===branch_id.toString())
     if(sbs_code===branch_info[0].code.slice(-4)){
       const branch_users = users["branch_users"]
-      if(branch_users < 5){
+      if(branch_users < 2){
         setNewBranch(true)
       } else {
+        setModalData("Branch user limit exceeded.")
+        setModal(true)
         console.log("Branch user limit exceeded.")
       }
     } else{
@@ -166,6 +176,10 @@ const Register = () => {
     setReportTypeHOChecked(false);
 
   };
+
+  const closeModal = ()=>{
+    setModal(false);
+  }
 
   return (
     <div className="c-app c-default-layout flex-row align-items-center">
@@ -320,6 +334,22 @@ const Register = () => {
             </CCard>
           </CCol>
         </CRow>
+        <CModal
+        size="sm"
+        show={modal}
+        onClose={closeModal}
+        centered={true}
+      >
+        <CModalBody>
+          {modalData}
+        </CModalBody>
+        <CModalFooter>
+          <CButton
+            color="success"
+            onClick={closeModal}
+          >Ok</CButton>
+        </CModalFooter>
+      </CModal>
         
       </CContainer>
     </div>
