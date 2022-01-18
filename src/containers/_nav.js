@@ -233,18 +233,8 @@ export const _nav =  [
     _children: [
       {
         _tag: 'CSidebarNavItem',
-        name: 'Add User',
-        to: '/user/add',
-      },
-      {
-        _tag: 'CSidebarNavItem',
         name: 'User List',
         to: '/users',
-      },
-      {
-        _tag: 'CSidebarNavItem',
-        name: 'Change Password',
-        to: '',
       }
     ]
   },

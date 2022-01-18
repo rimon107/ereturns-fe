@@ -1,5 +1,6 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
+import { useHistory } from 'react-router-dom'
 import {
   CButton,
   CCard,
@@ -11,62 +12,88 @@ import {
   CInput,
   CFormGroup,
   CLabel,
-  CCardFooter
+  CCardFooter,
+  CModal,
+  CModalBody,
+  CModalFooter
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react';
-import { uploadRit } from "../../actions/rit";
+import { updateUser } from "../../actions/user";
 
 
-const AddUser = () => {
+const UserUpdate = ({match}) => {
   const dispatch = useDispatch();
-  const user = useSelector(state => state.auth.user)
+  const history = useHistory()
+  const users = useSelector(state => state.user.users)
+  const user = users.find( user => user.id.toString() === match.params.id)
+
+  const [modal, setModal] = useState(false);
 
   const [formData, setFormData] = useState({
     user_name: "",
     password: "",
-    confirm_password: "",
     designation: "",
     department: "",
     email: "",
     mobile: "",
+    phone: "",
   });
 
-  const { user_name, password, confirm_password, designation, department, email, mobile } = formData;
+  const { user_name, password, designation, department, email, mobile, phone } = formData;
 
   const onChange = e =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
+  
+  useEffect(() => {
+    if(user) {
+      setFormData({ ...formData, 
+        user_name: user.name,
+        designation: user.designation,
+        department: user.department,
+        email: user.email,
+        mobile: user.mobile,
+        phone: user.phone,
+      });
+    }
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   const onSubmit = async e => {
-    
     e.preventDefault();
-    // const time = new Date(); 
-    // const date = base_date+"T"+time.getHours() + ":"+time.getMinutes() + ":"+time.getSeconds() + "+06:00";
-    let form_data = new FormData();
-    form_data.append('financial_institute_type', user.financial_institute_type.id);
-    form_data.append('financial_institute', user.financial_institute.id);
-    form_data.append('branch', user.branch.id);
-    // form_data.append('department', user.department.id);
-    // form_data.append('base_date', date);
-    // form_data.append('file', file, file.name);
-    // form_data.append('uploaded_by', user.id);
-    // form_data.append('status', 1);
-    // form_data.append('prepared_by', prepared_by);
-    // form_data.append('phone', phone_number);
 
-    // dispatch(uploadRit(form_data));
+    let data = {};
+    data['name'] = user_name;
+    data['designation'] = designation;
+    data['department'] = department;
+    data['email'] = email;
+    data['mobile'] = mobile;
+    data['phone'] = phone;
 
-    e.target.reset();
+    if(password){
+      data['password'] = password;
+    }
+
+    dispatch(updateUser(user.id, data));
+    
     setFormData({ ...formData, 
       user_name: "",
       password: "",
-      confirm_password: "",
       designation: "",
       department: "",
       email: "",
-      mobile: ""
+      mobile: "",
+      phone: ""
    });
 
+  setModal(true);
+
   };
+
+  
+
+  const closeModal = ()=>{
+    setModal(false);
+    history.push('/users')
+  }
 
   return (
     <>
@@ -75,14 +102,14 @@ const AddUser = () => {
         <CForm id="upload_form" method="post" className="form-horizontal" onSubmit={onSubmit}>
           <CCard>
             <CCardHeader>
-              Create 
-              <small> Admin User</small>
+              Update 
+              <small> User</small>
             </CCardHeader>
             <CCardBody>
                 
                 <CFormGroup row>
                   <CCol md="3">
-                    <CLabel htmlFor="user_name">Username</CLabel>
+                    <CLabel htmlFor="user_name">Name</CLabel>
                   </CCol>
                   <CCol xs="12" md="9">
                     <CInput id="user_name" name="user_name" value={user_name} onChange={onChange}/>
@@ -97,16 +124,6 @@ const AddUser = () => {
                     <CInput type="password" id="password" name="password" value={password} onChange={onChange}/>
                   </CCol>
                 </CFormGroup>
-
-                <CFormGroup row>
-                  <CCol md="3">
-                    <CLabel htmlFor="confirm_password">Re-Type Password</CLabel>
-                  </CCol>
-                  <CCol xs="12" md="9">
-                    <CInput type="password" id="confirm_password" name="confirm_password" value={confirm_password} onChange={onChange}/>
-                  </CCol>
-                </CFormGroup>
-
                 <CFormGroup row>
                   <CCol md="3">
                     <CLabel htmlFor="designation">Designation</CLabel>
@@ -136,10 +153,19 @@ const AddUser = () => {
 
                 <CFormGroup row>
                   <CCol md="3">
-                    <CLabel htmlFor="mobile">Mobile No.</CLabel>
+                    <CLabel htmlFor="mobile">Mobile</CLabel>
                   </CCol>
                   <CCol xs="12" md="9">
                     <CInput id="mobile" name="mobile" value={mobile} onChange={onChange}/>
+                  </CCol>
+                </CFormGroup>
+
+                <CFormGroup row>
+                  <CCol md="3">
+                    <CLabel htmlFor="phone">Phone</CLabel>
+                  </CCol>
+                  <CCol xs="12" md="9">
+                    <CInput id="phone" name="mobile" value={phone} onChange={onChange}/>
                   </CCol>
                 </CFormGroup>
 
@@ -151,8 +177,26 @@ const AddUser = () => {
           </CForm>
         </CCol>
       </CRow>
+      <CModal
+        size="sm"
+        show={modal}
+        onClose={closeModal}
+        centered={true}
+      >
+        <CModalBody>
+          User Update Successful.
+        </CModalBody>
+        <CModalFooter>
+          <CButton
+            color="success"
+            onClick={closeModal}
+          >Ok</CButton>
+        </CModalFooter>
+      </CModal>
     </>
   )
 }
 
-export default AddUser
+export default UserUpdate
+
+

@@ -12,11 +12,13 @@ const User = ({match}) => {
   // const user = usersData.find( user => user.id.toString() === match.params.id)
   const user = useSelector(state => state.user.user)
   const userDetails = user ? Object.entries(user) : 
-    [['',  "No user found"]]
+    [["no_user", "No user found"]]
 
   useEffect(() => {
-    dispatch(profile(match.params.id));
-}, []) // eslint-disable-line react-hooks/exhaustive-deps
+    if(!user) {
+      dispatch(profile(match.params.id));
+    }
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <CRow>
@@ -27,36 +29,55 @@ const User = ({match}) => {
             <strong>User Details</strong>
           </CCardHeader>
           <CCardBody>
-              <table className="table table-striped table-hover">
+            {
+              userDetails.length > 1? (
+                <table className="table table-striped table-hover">
                 <tbody>
-                  {
-                    userDetails?.map(([key, value], index) => {
-                      if(key=='name'||key=='email'||key=='designation'||key=='department'||key=='mobile')
-                        return (
-                          <tr key={index.toString()}>
-                            <td>{capitalize(key)}</td>
-                            <td><strong>{value?.toString()}</strong></td>
-                          </tr>
-                        )
-                      if(key=='financial_institute')
-                       return (
-                        <tr key={index.toString()}>
-                        <td>Financial Institute</td>
-                        <td><strong>{value.name?.toString()}</strong></td>
-                        </tr>
-                       )
-                      if(key=='branch')
-                       return (
-                         <tr key={index.toString()}>
-                         <td>{capitalize(key)}</td>
-                         <td><strong>{value.name?.toString()}</strong></td>
-                        </tr>
-
-                       )
-                      })
-                  }
+                  <tr key={3}>
+                    <td>{capitalize(userDetails[3][0])}</td>
+                    <td><strong>{userDetails[3][1]?.toString()}</strong></td>
+                  </tr>
+                  <tr key={5}>
+                    <td>{capitalize(userDetails[5][0].replace("_", " "))}</td>
+                    <td><strong>{userDetails[5][1]?.name.toString()}</strong></td>
+                  </tr>
+                  <tr key={6}>
+                    <td>{capitalize(userDetails[6][0])}</td>
+                    <td><strong>{userDetails[6][1]?.name.toString()}</strong></td>
+                  </tr>
+                  <tr key={8}>
+                    <td>{capitalize(userDetails[8][0])}</td>
+                    <td><strong>{userDetails[8][1]?.toString()}</strong></td>
+                  </tr>
+                  <tr key={9}>
+                    <td>{capitalize(userDetails[9][0])}</td>
+                    <td><strong>{userDetails[9][1]?.toString()}</strong></td>
+                  </tr>
+                  <tr key={10}>
+                    <td>{capitalize(userDetails[10][0])}</td>
+                    <td><strong>{userDetails[10][1]?.toString()}</strong></td>
+                  </tr>
+                  <tr key={11}>
+                    <td>{capitalize(userDetails[11][0])}</td>
+                    <td><strong>{userDetails[11][1]?.toString()}</strong></td>
+                  </tr>
+                  <tr key={12}>
+                    <td>{capitalize(userDetails[12][0])}</td>
+                    <td><strong>{userDetails[12][1]?.toString()}</strong></td>
+                  </tr>
                 </tbody>
               </table>
+              ) : (
+                <table className="table table-striped table-hover">
+                <tbody>
+                  <tr key={1}>
+                    {/* <td>{capitalize(userDetails[0][0])}</td> */}
+                    <td><strong>{userDetails[0][1]?.toString()}</strong></td>
+                  </tr>
+                </tbody>
+              </table>
+              )
+            }
           </CCardBody>
         </CCard>
       </CCol>

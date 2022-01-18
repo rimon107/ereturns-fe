@@ -1,38 +1,133 @@
-import React, { useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { CCard, CCardBody, CCardHeader, CCol, CRow } from '@coreui/react'
-// import CIcon from '@coreui/icons-react'
+import React, { useState } from 'react'
+import { useDispatch } from 'react-redux'
+import {
+  CButton,
+  CCard,
+  CCardBody,
+  CCardHeader,
+  CCol,
+  CRow,
+  CForm,
+  CInput,
+  CFormGroup,
+  CLabel,
+  CCardFooter,
+  CModal,
+  CModalBody,
+  CModalFooter
+} from '@coreui/react'
+import CIcon from '@coreui/icons-react'
 
-import { profile } from '../../actions/user';
-import { capitalize } from 'lodash';
+import { changePassword } from "../../actions/user";
+import { logout } from '../../actions/auth';
 
 
-const User = ({match}) => {
-  // const dispatch = useDispatch();
-  // // const user = usersData.find( user => user.id.toString() === match.params.id)
-  // const user = useSelector(state => state.user.user)
-  // const userDetails = user ? Object.entries(user) : 
-  //   [['',  "No user found"]]
+const ChangePassword = () => {
+  const dispatch = useDispatch();
 
-//   useEffect(() => {
-//     dispatch(profile(match.params.id));
-// }, []) // eslint-disable-line react-hooks/exhaustive-deps
+  const [modal, setModal] = useState(false);
+
+  const [formData, setFormData] = useState({
+    current_password: "",
+    new_password: "",
+    confirm_password: "",
+  });
+
+  const { current_password, new_password, confirm_password } = formData;
+
+  const onChange = e =>
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+
+  const onSubmit = async e => {
+    e.preventDefault();
+
+    let data = {};
+    data['current_password'] = current_password;
+    data['new_password'] = new_password;
+    data['confirm_password'] = confirm_password;
+
+    dispatch(changePassword(data));
+    
+    setFormData({ ...formData, 
+      current_password: "",
+      new_password: "",
+      confirm_password: ""
+   });
+
+  setModal(true);
+
+  };
+
+  const closeModal = ()=>{
+    setModal(false);
+    dispatch(logout());
+  }
 
   return (
-    <CRow>
-      <CCol lg={12}>
-        <CCard>
-          <CCardHeader>
-            {/* User id: {match.params.id} */}
-            <strong>Change Password</strong>
-          </CCardHeader>
-          <CCardBody>
-              
-          </CCardBody>
-        </CCard>
-      </CCol>
-    </CRow>
+    <>
+      <CRow>
+        <CCol lg={5}>
+        <CForm id="chabge_password_form" method="post" onSubmit={onSubmit}>
+          <CCard>
+            <CCardHeader>
+              Change 
+              <small> Password</small>
+            </CCardHeader>
+            <CCardBody>
+                
+                <CFormGroup row>
+                  <CCol md="5">
+                    <CLabel htmlFor="password">Current Password</CLabel>
+                  </CCol>
+                  <CCol xs="9" md="6">
+                    <CInput required type="password" id="current_password" name="current_password" value={current_password} onChange={onChange}/>
+                  </CCol>
+                </CFormGroup>
+
+                <CFormGroup row>
+                  <CCol md="5">
+                    <CLabel htmlFor="password">New Password</CLabel>
+                  </CCol>
+                  <CCol xs="9" md="6">
+                    <CInput required type="password" id="new_password" name="new_password" value={new_password} onChange={onChange}/>
+                  </CCol>
+                </CFormGroup>
+
+                <CFormGroup row>
+                  <CCol md="5">
+                    <CLabel htmlFor="password">ConfirmPassword</CLabel>
+                  </CCol>
+                  <CCol xs="9" md="6">
+                    <CInput required type="password" id="confirm_password" name="confirm_password" value={confirm_password} onChange={onChange}/>
+                  </CCol>
+                </CFormGroup>
+                
+            </CCardBody>
+            <CCardFooter>
+                  <CButton type="submit" size="sm" color="primary"><CIcon name="cil-scrubber" /> Submit</CButton> 
+            </CCardFooter>
+          </CCard>
+          </CForm>
+        </CCol>
+      </CRow>
+      <CModal
+        size="sm"
+        show={modal}
+        onClose={closeModal}
+        centered={true}
+      >
+        <CModalBody>
+          Password update successful. Please login again with the new password.
+        </CModalBody>
+        <CModalFooter>
+          <CButton
+            color="success"
+            onClick={closeModal}
+          >Ok</CButton>
+        </CModalFooter>
+      </CModal>
+    </>
   )
 }
 
-export default User
+export default ChangePassword
