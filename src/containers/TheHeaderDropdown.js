@@ -49,7 +49,7 @@ const TheHeaderDropdown = ({ auth: { isAuthenticated, user }, logout, profile })
           <CIcon name="cil-settings" className="mfe-2" />
           Change Password
         </CDropdownItem>
-        <CDropdownItem onClick={onProfileClick}  href={`#/users/${user?.id}`}>
+        <CDropdownItem onClick={onProfileClick} href={`#/users/${user?.id}`}>
             <CIcon name="cil-user" className="mfe-2" />
             Profile
         </CDropdownItem>

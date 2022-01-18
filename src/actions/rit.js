@@ -167,7 +167,7 @@ export const loadRitNonReportingBranchByFI = (rit, fi, base_date) => async (disp
 // LOAD Rit Upload List
 export const uploadRit = (form_data) => async (dispatch, getState) => {
   try {
-      const res = await api.post('rit/upload/', form_data, requestFormOptions(getState));
+    const res = await api.post('rit/upload/', form_data, requestFormOptions(getState));
     dispatch({
       type: RIT_UPLOADED,
       payload: res.data
