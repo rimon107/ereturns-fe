@@ -17,6 +17,8 @@ export const GET_PROFILE = "[User] Profile Load";
 export const NO_PROFILE = "[User] Profile Not Found";
 export const USER_LIST_LOAD = "[User] List Load";
 export const USER_LIST_LOAD_ERROR = "[User] List Load Error";
+export const USER_INACTIVE_LIST_LOAD = "[User] Inactive List Load";
+export const USER_INACTIVE_LIST_LOAD_ERROR = "[User] Inactive List Load Error";
 
 // Core actiontypes
 export const SET = '[Core] set';

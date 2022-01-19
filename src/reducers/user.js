@@ -4,7 +4,9 @@ import {
     LOGOUT_SUCCESS,
     USER_LOAD_ERROR,
     USER_LIST_LOAD,
-    USER_LIST_LOAD_ERROR
+    USER_LIST_LOAD_ERROR,
+    USER_INACTIVE_LIST_LOAD,
+    USER_INACTIVE_LIST_LOAD_ERROR
   } from '../actiontypes';
   
   const initialState = {
@@ -28,6 +30,16 @@ import {
         return {
           ...state,
           users: null
+        };
+      case USER_INACTIVE_LIST_LOAD:
+        return {
+          ...state,
+          inactive_users: action.payload
+        };
+      case USER_INACTIVE_LIST_LOAD_ERROR:
+        return {
+          ...state,
+          inactive_users: null
         };
       case NO_PROFILE:
       case USER_LOAD_ERROR:

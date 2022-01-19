@@ -193,6 +193,7 @@ const UserUpdate = ({match}) => {
           >Ok</CButton>
         </CModalFooter>
       </CModal>
+      
     </>
   )
 }

@@ -11,7 +11,9 @@ import {
   NO_PROFILE,
   USER_LOAD_ERROR,
   USER_LIST_LOAD,
-  USER_LIST_LOAD_ERROR
+  USER_LIST_LOAD_ERROR,
+  USER_INACTIVE_LIST_LOAD,
+  USER_INACTIVE_LIST_LOAD_ERROR
 } from '../actiontypes';
 
 // LOAD USER
@@ -93,7 +95,7 @@ export const profile = (id) => async (dispatch, getState) => {
   }
 }
 
-// LOAD USER PROFILE
+// LOAD USER LIST
 export const loadUserList = () => async (dispatch, getState) => {
 
   try{
@@ -147,3 +149,37 @@ export const updateUser = (id, data) => async (dispatch, getState) => {
     });
   }
 };
+
+// LOAD INACTIVE USER LIST
+export const loadInactiveUserList = () => async (dispatch, getState) => {
+
+  try{
+    const res = await api.get(`users/?is_active=0`, requestOptions(getState));
+    dispatch({
+      type: USER_INACTIVE_LIST_LOAD,
+      payload: res.data
+    });
+  }
+  catch (err) {
+    dispatch({
+      type: USER_INACTIVE_LIST_LOAD_ERROR
+    });
+  }
+}
+
+// Delete USER
+export const userDelete = (id) => async (dispatch, getState) => {
+
+  try{
+    const res = await api.delete(`users/${id}/`, requestOptions(getState));
+    dispatch({
+      type: USER_INACTIVE_LIST_LOAD,
+      payload: res.data
+    });
+  }
+  catch (err) {
+    dispatch({
+      type: USER_INACTIVE_LIST_LOAD_ERROR
+    });
+  }
+}
