@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, lazy } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { useHistory } from 'react-router-dom';
 import {
   CBadge,
   CCard,
@@ -10,10 +9,15 @@ import {
   CDataTable,
   CRow,
   CButton,
-  CCollapse
+  CCollapse,
+  CModal,
+  CModalBody,
+  CModalFooter
 } from '@coreui/react';
 
-import { loadUserList } from '../../actions/user';
+import { loadInactiveUserList, updateUser, userDelete } from '../../actions/user';
+
+const DashboardWidgetsDropdown = lazy(() => import('../widgets/DashboardWidgetsDropdown.js'))
 
 const getBadge = status => {
   switch (status) {
@@ -25,14 +29,11 @@ const getBadge = status => {
   }
 }
 const fields = [
-  // { key: 'sl', label: '#' },
-  // { key: 'id', label: 'Id' },
   { key: 'no', label: '#' },
+  { key: 'username', label: 'Userame', _style: { width: '20%'}},
   { key: 'name', label: 'Name', _style: { width: '20%'}},
-  { key: 'branch', label: 'Branch', sorter: false, },
-  { key: 'email', _style: { width: '20%'} },
+  { key: 'branch', label: 'Branch', sorter: false },
   { key: 'mobile' },
-  { key: 'status', label: 'Status' },
   { key: 'is_active', label: 'Active' },
   {
     key: 'toggle_button',
@@ -42,7 +43,14 @@ const fields = [
     filter: false
   },
   {
-    key: 'edit_button',
+    key: 'active_button',
+    label: '',
+    _style: { width: '1%' },
+    sorter: false,
+    filter: false
+  },
+  {
+    key: 'delete_button',
     label: '',
     _style: { width: '1%' },
     sorter: false,
@@ -51,18 +59,22 @@ const fields = [
 ]
 
 
-const UserList = () => {
+const DashboardHO = () => {
     const dispatch = useDispatch()
-    const history = useHistory()
-    const user_list = useSelector(state => state.user.users)
+    const user_list = useSelector(state => state.user.inactive_users)
 
     useEffect(() => {
-        dispatch(loadUserList());
+        dispatch(loadInactiveUserList());
     }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
     const [details, setDetails] = useState([])
+    const [modal, setModal] = useState(false);
+    const [deleteModal, setDeleteModal] = useState(false);
+    const [deleteId, setDeleteId] = useState(0);
+    const [modalData, setModalData] = useState("");
 
     const toggleDetails = (index) => {
+      console.log("toggleDetails")
       const position = details.indexOf(index)
       let newDetails = details.slice()
       if (position !== -1) {
@@ -73,15 +85,40 @@ const UserList = () => {
       setDetails(newDetails)
     }
 
-    const customizeDate = (date) => {
-      if(date) {
-        return new Date(date)
-        .toLocaleDateString("sq-AL",{ year: 'numeric', month: '2-digit', day: '2-digit' })
-      }
+    const activateUser = (id) => {
+      console.log("activate User")
+      let data = {}
+      data["is_active"] = true
+      dispatch(updateUser(id, data))
+      dispatch(loadInactiveUserList())
+      setModalData("User activation successful.")
+      setModal(true);
+      
+    }
+
+    const deleteUserModal = (id) => {
+      setDeleteId(id)
+      setDeleteModal(true);
+    }
+
+    const deleteUser = () => {
+      console.log("delete user")
+      dispatch(userDelete(deleteId))
+      dispatch(loadInactiveUserList())
+      setDeleteModal(false);
+      setModalData("User delete successful.")
+      setModal(true);
+      
+    }
+
+    const closeModal = ()=>{
+      setModal(false);
+      setDeleteModal(false);
     }
     
   return (
     <>
+    <DashboardWidgetsDropdown />
       <CRow>
         <CCol>
           <CCard>
@@ -164,23 +201,37 @@ const UserList = () => {
                         <p className="text-muted"><b>Email:</b> {item.email}</p>
                         <p className="text-muted"><b>Mobile:</b> {item.mobile}</p>
                         <p className="text-muted"><b>Phone:</b> {item.phone}</p>
-                        <p className="text-muted"><b>Approved date:</b> {customizeDate(item.approved_time)}</p>
-                        <p className="text-muted"><b>Last Login date:</b> {customizeDate(item.approved_time)}</p>
                       </CCardBody>
                     </CCollapse>
                   )},
-                  'edit_button':
+                  'active_button':
                   (item)=>{
                     return (
                       <td className="py-2">
                         <CButton
-                          color="primary"
+                          color="success"
                           variant="outline"
                           shape="square"
                           size="sm"
-                          onClick={() => history.push(`/users/update/${item.id}`)}
+                          onClick={()=>{activateUser(item.id)}}
                         >
-                          {"Edit"}
+                          {"Active"}
+                        </CButton>
+                      </td>
+                    )
+                  },
+                  'delete_button':
+                  (item)=>{
+                    return (
+                      <td className="py-2">
+                        <CButton
+                          color="danger"
+                          variant="outline"
+                          shape="square"
+                          size="sm"
+                          onClick={()=>{deleteUserModal(item.id)}}
+                        >
+                          {"Delete"}
                         </CButton>
                       </td>
                     )
@@ -191,8 +242,45 @@ const UserList = () => {
           </CCard>
         </CCol>
       </CRow>
+      <CModal
+        size="sm"
+        show={modal}
+        onClose={closeModal}
+        centered={true}
+      >
+        <CModalBody>
+          {modalData}
+        </CModalBody>
+        <CModalFooter>
+          <CButton
+            color="success"
+            onClick={closeModal}
+          >Ok</CButton>
+        </CModalFooter>
+      </CModal>
+      <CModal
+        size="sm"
+        show={deleteModal}
+        onClose={closeModal}
+        centered={true}
+      >
+        <CModalBody>
+          Are you sure?
+        </CModalBody>
+        <CModalFooter>
+          <CButton
+            color="success"
+            onClick={()=>{deleteUser()}}
+          >Yes</CButton>
+          <CButton
+            color="danger"
+            onClick={closeModal}
+          >No</CButton>
+        </CModalFooter>
+      </CModal>
     </>
   )
 }
 
-export default UserList
+export default DashboardHO
+

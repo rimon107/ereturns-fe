@@ -95,8 +95,14 @@ const Register = () => {
       }
     }
     if(e.target.name==="branch_id"){
-      loadUserCount(fi_id, e.target.value)
-      onChangeBranch(e)
+      if(e.target.value!=="DEFAULT"){
+        loadUserCount(fi_id, e.target.value)
+        onChangeBranch(e)
+        setNewBranch(false);
+      } else {
+        setSbsCode(false)
+        setNewBranch(false);
+      }
     }
     setFormData({ ...formData, [e.target.name]: e.target.value });
   }
@@ -128,18 +134,17 @@ const Register = () => {
       setSbsCode(false);
       setNewBranch(false);
 
-      const ho_users = users? users["ho_users"] : 0
-      if(ho_users===0){
+      const ho_users = users? users["ho_users"] : -1
+      if(ho_users===-1){
         setModalData("Data is not loaded correctly. Please try again.")
         setModal(true)
       }
-      else if(ho_users> 0 && ho_users < 6){
+      else if(ho_users> -1 && ho_users < 6){
         setHo(true);
         setFormData({ ...formData, [e.target.name]: e.target.value });
       } else {
         setModalData("Head Office user limit exceeded.")
         setModal(true)
-        console.log("HO user limit exceeded.")
       }
     }
   }
@@ -152,7 +157,12 @@ const Register = () => {
     let branch_info = branches.filter( br => br.id.toString()===branch_id.toString())
     if(sbs_code===branch_info[0].code.slice(-4)){
       const branch_users = users["branch_users"]
-      if(branch_users < 2){
+      const ho_users = users? users["ho_users"] : -1
+      if(ho_users===-1){
+        setModalData("Data is not loaded correctly. Please try again.")
+        setModal(true)
+      }
+      else if(branch_users > -1 && branch_users < 1){
         setNewBranch(true)
       } else {
         setModalData("Branch user limit exceeded.")
@@ -160,7 +170,8 @@ const Register = () => {
         console.log("Branch user limit exceeded.")
       }
     } else{
-      console.log("Wrong SBS Code. Please Contact With Authenticated Person.")
+      setModalData("Wrong SBS Code. Please Contact With the Authenticated Person.")
+      setModal(true)
       setNewBranch(false)
     }
   }
@@ -168,33 +179,43 @@ const Register = () => {
   const onSubmit = async e => {
     e.preventDefault();
 
-    const financial_institute_type = 1
-    dispatch(register(financial_institute_type, fi_id, branch_id, employee_name, password, designation, 
-      department, email, mobile, phone, report_type));
+    if(!employee_name || !password || !email || !designation || !department ){
 
-    e.target.reset();
-    setFormData({ ...formData,
-      employee_name: "",
-      password: "",
-      confirm_password: "",
-      designation: "",
-      department: "",
-      email: "",
-      mobile: "",
-      phone: "",
-      sbs_code: "",
-      report_type: "",
-      fi_id: "",
-      branch_id: "",
-    });
+      return;
 
-    setBranch(false);
-    setHo(false);
-    setSbsCode(false);
-    setNewBranch(false);
-    setReportTypeBranchChecked(false);
-    setReportTypeHOChecked(false);
+    } else {
 
+      const financial_institute_type = 1
+      dispatch(register(financial_institute_type, fi_id, branch_id, employee_name, password, designation, 
+        department, email, mobile, phone, report_type));
+
+      e.target.reset();
+      setFormData({ ...formData,
+        employee_name: "",
+        password: "",
+        confirm_password: "",
+        designation: "",
+        department: "",
+        email: "",
+        mobile: "",
+        phone: "",
+        sbs_code: "",
+        report_type: "",
+        fi_id: "",
+        branch_id: "",
+      });
+
+      setBranch(false);
+      setHo(false);
+      setSbsCode(false);
+      setNewBranch(false);
+      setReportTypeBranchChecked(false);
+      setReportTypeHOChecked(false);
+
+      setModalData("Registration successful. Please contact Head Office admin user for your user activation and username.")
+      setModal(true)
+
+    }
   };
 
   const closeModal = ()=>{
@@ -283,7 +304,7 @@ const Register = () => {
                           <CIcon name="cil-user" />
                         </CInputGroupText>
                       </CInputGroupPrepend>
-                      <CInput type="text" name="employee_name" placeholder="Employee Name" autoComplete="username" value={employee_name} onChange={onChange} />
+                      <CInput required type="text" name="employee_name" placeholder="Employee Name" autoComplete="username" value={employee_name} onChange={onChange} />
                     </CInputGroup>
                     <CInputGroup className="mb-3">
                       <CInputGroupPrepend>
@@ -291,7 +312,7 @@ const Register = () => {
                           <CIcon name="cil-lock-locked" />
                         </CInputGroupText>
                       </CInputGroupPrepend>
-                      <CInput type="password" name="password" placeholder="Password" autoComplete="new-password" value={password} onChange={onChange}/>
+                      <CInput required type="password" name="password" placeholder="Password" autoComplete="new-password" value={password} onChange={onChange}/>
                     </CInputGroup>
                     <CInputGroup className="mb-3">
                       <CInputGroupPrepend>
@@ -299,7 +320,7 @@ const Register = () => {
                           <CIcon name="cil-lock-locked" />
                         </CInputGroupText>
                       </CInputGroupPrepend>
-                      <CInput type="password" name="confirm_password" placeholder="Repeat password" autoComplete="new-password" value={confirm_password} onChange={onChange}/>
+                      <CInput required type="password" name="confirm_password" placeholder="Repeat password" autoComplete="new-password" value={confirm_password} onChange={onChange}/>
                     </CInputGroup>
                     <CInputGroup className="mb-3">
                       <CInputGroupPrepend>
@@ -307,7 +328,7 @@ const Register = () => {
                           <CIcon name="cil-tag" />
                         </CInputGroupText>
                       </CInputGroupPrepend>
-                      <CInput type="text" name="designation" placeholder="Designation" autoComplete="designation" value={designation} onChange={onChange}/>
+                      <CInput required type="text" name="designation" placeholder="Designation" autoComplete="designation" value={designation} onChange={onChange}/>
                     </CInputGroup>
                     <CInputGroup className="mb-3">
                       <CInputGroupPrepend>
@@ -315,13 +336,13 @@ const Register = () => {
                           <CIcon name="cil-window-maximize" />
                         </CInputGroupText>
                       </CInputGroupPrepend>
-                      <CInput type="text" name="department" placeholder="Department/Desk" autoComplete="department" value={department} onChange={onChange}/>
+                      <CInput required type="text" name="department" placeholder="Department/Desk" autoComplete="department" value={department} onChange={onChange}/>
                     </CInputGroup>
                     <CInputGroup className="mb-3">
                       <CInputGroupPrepend>
                         <CInputGroupText>@</CInputGroupText>
                       </CInputGroupPrepend>
-                      <CInput type="text" name="email" placeholder="Email" autoComplete="email" value={email} onChange={onChange}/>
+                      <CInput required type="text" name="email" placeholder="Email" autoComplete="email" value={email} onChange={onChange}/>
                     </CInputGroup>
                     <CInputGroup className="mb-3">
                       <CInputGroupPrepend>
@@ -355,21 +376,21 @@ const Register = () => {
           </CCol>
         </CRow>
         <CModal
-        size="sm"
-        show={modal}
-        onClose={closeModal}
-        centered={true}
-      >
-        <CModalBody>
-          {modalData}
-        </CModalBody>
-        <CModalFooter>
-          <CButton
-            color="success"
-            onClick={closeModal}
-          >Ok</CButton>
-        </CModalFooter>
-      </CModal>
+          size="sm"
+          show={modal}
+          onClose={closeModal}
+          centered={true}
+        >
+          <CModalBody>
+            {modalData}
+          </CModalBody>
+          <CModalFooter>
+            <CButton
+              color="success"
+              onClick={closeModal}
+            >Ok</CButton>
+          </CModalFooter>
+        </CModal>
         
       </CContainer>
     </div>

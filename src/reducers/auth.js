@@ -41,7 +41,7 @@ import {
       case REGISTER_SUCCESS:
         return {
           ...state,
-          registration: "success"
+          registration: action.payload
         };
       case LOGIN_SUCCESS:
         return {
