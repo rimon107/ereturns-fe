@@ -51,6 +51,9 @@ export const RIT_REPORT_DATA_LOAD_ERROR = '[RIT] Report Data Load Error';
 export const RIT_UPLOADED = '[RIT] Upload Success';
 export const RIT_UPLOAD_ERROR = '[RIT] Upload Error';
 
+export const RIT_FILE_LOAD = '[RIT] File Load';
+export const RIT_FILE_LOAD_ERROR = '[RIT] File Load Error';
+
 // Institute actiontypes
 export const FINANCIAL_INSTITUTE_LOAD = '[Institute] Financial Institute Load';
 export const FINANCIAL_INSTITUTE_LOAD_ERROR = '[Institute] Financial Institute Load Error';

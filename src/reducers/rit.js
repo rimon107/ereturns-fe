@@ -18,7 +18,9 @@ import {
   RIT_REPORT_DATA_RESET,
   RIT_REPORT_DATA_LOAD_ERROR,
   RIT_UPLOADED,
-  RIT_UPLOAD_ERROR
+  RIT_UPLOAD_ERROR,
+  RIT_FILE_LOAD,
+  RIT_FILE_LOAD_ERROR
 } from '../actiontypes';
 
 const initialState = {
@@ -28,6 +30,7 @@ const initialState = {
   departments: null,
   default_files: null,
   department_files: null,
+  rit: null,
   rits: null,
   report_data: null,
   uploaded_rit: null
@@ -80,6 +83,16 @@ export const ritReducer = (state = initialState, action) => {
         ...state,
         departments: null
       };
+    case RIT_FILE_LOAD:
+      return {
+        ...state,
+        rit: action.payload
+      };
+    case RIT_FILE_LOAD_ERROR:
+      return {
+        ...state,
+        rit: null
+      };
     case RIT_DEPARTMENT_FILES_LOAD:
       return {
         ...state,
@@ -128,6 +141,7 @@ export const ritReducer = (state = initialState, action) => {
         default_files: null,
         department_files: null,
         rits: null,
+        rit: null,
         report_data: null
       };
     default:

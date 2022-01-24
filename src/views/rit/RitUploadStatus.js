@@ -57,7 +57,7 @@ const RitUploadStatusList = () => {
     const dispatch = useDispatch();
     const upload_list = useSelector(state => state.rit.upload_list)
 
-    const [loading, setLoading] = useState(true);
+    // const [loading, setLoading] = useState(true);
     const [details, setDetails] = useState([])
 
     useEffect(() => {
@@ -85,10 +85,6 @@ const RitUploadStatusList = () => {
     const customizeDate = (date) => {
       return new Date(date)
       .toLocaleDateString("sq-AL",{ year: 'numeric', month: '2-digit', day: '2-digit' })
-    }
-
-    const fileName = (file) => {
-
     }
 
   return (
