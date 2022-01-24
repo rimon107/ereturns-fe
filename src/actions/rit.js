@@ -17,7 +17,9 @@ import {
     RIT_REPORT_DATA_LOAD,
     RIT_REPORT_DATA_LOAD_ERROR,
     RIT_UPLOADED,
-    RIT_UPLOAD_ERROR
+    RIT_UPLOAD_ERROR,
+    RIT_FILE_LOAD,
+    RIT_FILE_LOAD_ERROR
 } from '../actiontypes';
 
 // LOAD Rit Frequency
@@ -175,6 +177,21 @@ export const uploadRit = (form_data) => async (dispatch, getState) => {
   } catch (err) {
     dispatch({
       type: RIT_UPLOAD_ERROR
+    });
+  }
+}
+
+// LOAD Rit Departments
+export const loadRitFileById = (id) => async (dispatch, getState) => {
+  try {
+      const res = await api.get(`rit/files/?rit_id=${id}`, requestOptions(getState));
+    dispatch({
+      type: RIT_FILE_LOAD,
+      payload: res.data
+    });
+  } catch (err) {
+    dispatch({
+      type: RIT_FILE_LOAD_ERROR
     });
   }
 }

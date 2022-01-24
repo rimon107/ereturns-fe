@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { useSelector, useDispatch } from 'react-redux'
+import { useSelector } from 'react-redux'
 import {
   CButton,
   CCard,
@@ -14,11 +14,11 @@ import {
   CCardFooter
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react';
-import { uploadRit } from "../../actions/rit";
+// import { uploadRit } from "../../actions/rit";
 
 
 const AddUser = () => {
-  const dispatch = useDispatch();
+  // const dispatch = useDispatch();
   const user = useSelector(state => state.auth.user)
 
   const [formData, setFormData] = useState({
