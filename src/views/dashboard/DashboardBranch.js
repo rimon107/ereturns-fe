@@ -15,16 +15,19 @@ import {
   CSelect,
   CCardFooter,
   CListGroup,
-  CListGroupItem
+  CListGroupItem,
+  CProgress
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react';
 import { 
   loadRitFeatures, 
   loadRitFrequency, 
   uploadRit, 
-  loadRitFileById 
+  loadRitFileById,
+  loadRitValidationDataByCode,
+  useUploadForm
 } from "../../actions/rit";
-import { RIT_FEATURE_RESET } from "../../actiontypes";
+import { RIT_FEATURE_RESET, RIT_UPLOAD_RESET } from "../../actiontypes";
 import { 
   basicValidation, 
   firstColumnValidate, 
@@ -56,6 +59,8 @@ const DashboardBranch = () => {
   const frequency = useSelector(state => state.rit.frequency)
   const features = useSelector(state => state.rit.features)
   const selected_rit = useSelector(state => state.rit.rit)
+  const validation_data = useSelector(state => state.rit.validation_data)
+  const uploaded_rit = useSelector(state => state.rit.uploaded_rit)
 
   const [formData, setFormData] = useState({
     rit_frequency: "", 
@@ -68,6 +73,10 @@ const DashboardBranch = () => {
   const [file, setFile] = useState(null);
   const [isError, setIsError] = useState(false);
   const [errorList, setErrorList] = useState(null);
+  const [modal, setModal] = useState(false);
+  const [showProgress, setShowProgress] = useState(false);
+  const [progressTime, setProgressTime] = useState(0);
+  const [uploadStatus, setUploadStatus] = useState(null);
 
   const { rit_frequency, rit, base_date, prepared_by, phone_number } = formData;
 
@@ -85,7 +94,6 @@ const DashboardBranch = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   }
     
-
   useEffect(() => {
     dispatch({ type: RIT_FEATURE_RESET });
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
@@ -102,30 +110,38 @@ const DashboardBranch = () => {
   const loadRitDetails = async event => {
     event.preventDefault();
     dispatch(loadRitFileById(event.target.value))
+    dispatch(loadRitValidationDataByCode(event.target.value))
   }
  
   const showError = (data) => {
     console.log("show error")
   }
 
-  const finalSubmit = (data) => {
+  const { isSuccess, uploadForm, progress } = useUploadForm();
+
+  const finalSubmit = () => {
     console.log("final submit")
-    // const time = new Date(); 
-    // const date = base_date+"T"+time.getHours() + ":"+time.getMinutes() + ":"+time.getSeconds() + "+06:00";
-    // let form_data = new FormData();
-    // form_data.append('rit', rit);
-    // form_data.append('financial_institute_type', user.financial_institute_type.id);
-    // form_data.append('financial_institute', user.financial_institute.id);
-    // form_data.append('branch', user.branch.id);
-    // form_data.append('department', user.department.id);
-    // form_data.append('base_date', date);
-    // form_data.append('file', file, file.name);
-    // form_data.append('uploaded_by', user.id);
-    // form_data.append('status', 1);
-    // form_data.append('prepared_by', prepared_by);
-    // form_data.append('phone', phone_number);
+    const time = new Date(); 
+    const date = base_date+"T"+time.getHours() + ":"+time.getMinutes() + ":"+time.getSeconds() + "+06:00";
+    let form_data = new FormData();
+    form_data.append('rit', rit);
+    form_data.append('financial_institute_type', user.financial_institute_type.id);
+    form_data.append('financial_institute', user.financial_institute.id);
+    form_data.append('branch', user.branch.id);
+    form_data.append('department', user.department);
+    form_data.append('base_date', date);
+    form_data.append('file', file, file.name);
+    form_data.append('uploaded_by', user.id);
+    form_data.append('status', 1);
+    form_data.append('prepared_by', prepared_by);
+    form_data.append('phone', phone_number);
 
     // dispatch(uploadRit(form_data));
+    dispatch(uploadForm(form_data));
+    console.log(progress);
+    setProgressTime(progress)
+
+    // setFile(null);
 
     // e.target.reset();
     // setFormData({ ...formData, 
@@ -143,8 +159,6 @@ const DashboardBranch = () => {
   }
 
   const checkInitialValidation = () => {
-
-    console.log(rit)
 
     let result = {}
     let errors = []
@@ -185,6 +199,11 @@ const DashboardBranch = () => {
       is_valid = false
       error_msg = "Please upload file."
       errors.push(error_msg)
+    } else {
+      if(file.size >= 1024*1024*1024){
+        error_msg = "File size is too large. Please upload files below 1GB!."
+        errors.push(error_msg)
+      }
     }
 
     if(!prepared_by){
@@ -212,122 +231,188 @@ const DashboardBranch = () => {
     return result
   }
 
-  // const notFound = (column) => {
-  //   console.log("Validation is not implemented for column "+column+" yet.")
-  // }
+  const progressTimer = () => {
+    let counter = 1;
+    let end_counter = 1;
+
+    // 317963006
+    console.log(file.size.toString())
+    console.log(file.size.toString().length)
+
+    const size_length = file.size.toString().length
+    let speed;
+    if(size_length<6){
+      speed = 1
+    } else if(size_length>=6 && size_length<=7) {
+      speed = 10
+    }
+    else if(size_length>7) {
+      speed = 10
+    }
+    const divide_by = Math.pow(10, (size_length-1))
+    const step = Math.ceil(file.size/divide_by)
+    console.log(step)
+    
+    const step_time = speed * 100
+
+    const timeout = 600000
+    const start_time = performance.now();
+    let end_time;
+
+    const interval = setInterval(() => {
+        end_counter++
+        if(end_counter%step===0){
+          counter++
+          console.log("counter: "+counter)
+          setProgressTime(counter)
+        }
+
+        console.log(uploaded_rit)
+        if(uploaded_rit){
+          clearInterval(interval);
+          setProgressTime(0)
+          setShowProgress(false)
+          if(uploaded_rit.status===0){
+            setUploadStatus("error")
+          } else {
+            setUploadStatus("success")
+          }
+        }
+
+        end_time = performance.now();
+        if(end_time-start_time>timeout) {
+          clearInterval(interval);
+          setProgressTime(0)
+          setShowProgress(false)
+          setUploadStatus("error")
+        }
+    }, step_time);
+  }
+
+  const notFound = (column) => {
+    console.log("Validation is not implemented for column "+column+" yet.")
+  }
 
   const onSubmit = async e => {
     e.preventDefault();
-    setIsError(false)
 
-    let errors;
+    setUploadStatus(null)
+    dispatch({ type: RIT_UPLOAD_RESET })
+    setShowProgress(true)
+    finalSubmit()
+    // progressTimer()
 
-    const init_result = checkInitialValidation()
-    if(!init_result.is_valid){
-      setIsError(true)
-      errors = processError(init_result.errors)
-      setErrorList(errors)
-    } else {
-      setIsError(false)
+    // e.preventDefault();
+    // setIsError(false)
+
+    // let errors;
+
+    // const init_result = checkInitialValidation()
+    // if(!init_result.is_valid){
+    //   setIsError(true)
+    //   errors = processError(init_result.errors)
+    //   setErrorList(errors)
+    // } else {
+    //   setIsError(false)
     
-      const data = basicValidation(user.financial_institute.code, 
-        user.branch.code, selected_rit, base_date, file)
+    //   const data = basicValidation(user.financial_institute.code, 
+    //     user.branch.code, selected_rit, base_date, file)
 
-      // console.log(data)
-      if(!data.is_valid) {
-        setIsError(true)
-        errors = processError(data.errors)
-        setErrorList(errors)
-      } else {
-        setIsError(false)
-        let error_list = []
+    //   // console.log(data)
+    //   if(!data.is_valid) {
+    //     setIsError(true)
+    //     errors = processError(data.errors)
+    //     setErrorList(errors)
+    //   } else {
+    //     setIsError(false)
+    //     let error_list = []
 
-        if(!selected_rit.validate) {
-          Papa.parse(file, {
-            complete: function(results) {
-              let is_valid = true
-              let result = {}
-              const data = results.data
+    //     if(!selected_rit.validate) {
+    //       Papa.parse(file, {
+    //         complete: function(results) {
+    //           let is_valid = true
+    //           let result = {}
+    //           const data = results.data
 
-              let first_column_result = firstColumnValidate(user.financial_institute.code,
-                user.branch.code, selected_rit, data[0])
-              if(!first_column_result.is_valid) {
-                is_valid = false
-                error_list.push(...first_column_result.errors)
-              }
+    //           let first_column_result = firstColumnValidate(user.financial_institute.code,
+    //             user.branch.code, selected_rit, data[0])
+    //           if(!first_column_result.is_valid) {
+    //             is_valid = false
+    //             error_list.push(...first_column_result.errors)
+    //           }
 
-              const columns = data[1]
-              const validate_data = data.slice(2,data.length+1)
+    //           const columns = data[1]
+    //           const validate_data = data.slice(2,data.length+1)
 
-              columns.forEach((element, index) => {
-                if(element.toString()===DATE) {
-                  const date_result = checkDateFormat(base_date, index, validate_data)
-                  if(!date_result.is_valid) {
-                    is_valid = false
-                    error_list.push(...date_result.errors)
-                  }
-                }
-                if(element.toString()===CCY_ID) {
-                  const ccy_result = checkCCY(index, validate_data)
-                  if(!ccy_result.is_valid) {
-                    is_valid = false
-                    error_list.push(...ccy_result.errors)
-                  }
-                }
-                if(element.toString()===FI_ID) {
-                  const fi_result = checkFI(user.financial_institute.code, index, validate_data)
-                  if(!fi_result.is_valid) {
-                    is_valid = false
-                    error_list.push(...fi_result.errors)
-                  }
-                }
-                if(element.toString()===ME_COA) {
-                  const mecoa_result = checkMeCoa(index, validate_data)
-                  if(!mecoa_result.is_valid) {
-                    is_valid = false
-                    error_list.push(...mecoa_result.errors)
-                  }
-                }
-                if(element.toString()===AMOUNT) {
-                  const amount_result = checkAmount(index, validate_data)
-                  if(!amount_result.is_valid) {
-                    is_valid = false
-                    error_list.push(...amount_result.errors)
-                  }
-                }
-                if(element.toString()===EXCHANGE_RATE) {
-                  const exchange_rate_result = checkExchangeRate(index, validate_data)
-                  if(!exchange_rate_result.is_valid) {
-                    is_valid = false
-                    error_list.push(...exchange_rate_result.errors)
-                  }
-                }
-                if(element.toString()===OPEN_POSITION_LIMIT) {
-                  const open_position_limit_result = checkOpenPositionLimit(index, validate_data)
-                  if(!open_position_limit_result.is_valid) {
-                    is_valid = false
-                    error_list.push(...open_position_limit_result.errors)
-                  }
-                }
-              })
+    //           columns.forEach((element, index) => {
+    //             if(element.toString()===DATE) {
+    //               const date_result = checkDateFormat(base_date, index, validate_data)
+    //               if(!date_result.is_valid) {
+    //                 is_valid = false
+    //                 error_list.push(...date_result.errors)
+    //               }
+    //             }
+    //             if(element.toString()===CCY_ID) {
+    //               const ccy_result = checkCCY(index, validate_data, validation_data["currency"])
+    //               if(!ccy_result.is_valid) {
+    //                 is_valid = false
+    //                 error_list.push(...ccy_result.errors)
+    //               }
+    //             }
+    //             if(element.toString()===FI_ID) {
+    //               const fi_result = checkFI(user.financial_institute.code, index, validate_data)
+    //               if(!fi_result.is_valid) {
+    //                 is_valid = false
+    //                 error_list.push(...fi_result.errors)
+    //               }
+    //             }
+    //             if(element.toString()===ME_COA) {
+    //               const mecoa_result = checkMeCoa(index, validate_data, validation_data["coa"])
+    //               if(!mecoa_result.is_valid) {
+    //                 is_valid = false
+    //                 error_list.push(...mecoa_result.errors)
+    //               }
+    //             }
+    //             if(element.toString()===AMOUNT) {
+    //               const amount_result = checkAmount(index, validate_data)
+    //               if(!amount_result.is_valid) {
+    //                 is_valid = false
+    //                 error_list.push(...amount_result.errors)
+    //               }
+    //             }
+    //             if(element.toString()===EXCHANGE_RATE) {
+    //               const exchange_rate_result = checkExchangeRate(index, validate_data)
+    //               if(!exchange_rate_result.is_valid) {
+    //                 is_valid = false
+    //                 error_list.push(...exchange_rate_result.errors)
+    //               }
+    //             }
+    //             if(element.toString()===OPEN_POSITION_LIMIT) {
+    //               const open_position_limit_result = checkOpenPositionLimit(index, validate_data)
+    //               if(!open_position_limit_result.is_valid) {
+    //                 is_valid = false
+    //                 error_list.push(...open_position_limit_result.errors)
+    //               }
+    //             }
+    //           })
 
-              if(is_valid){
-                setIsError(false)
-                finalSubmit()
-              } else {
-                setIsError(true)
-                errors = processError(error_list)
-                setErrorList(errors)
-                showError(result)
-              }
+    //           if(is_valid){
+    //             setIsError(false)
+    //             finalSubmit()
+    //           } else {
+    //             setIsError(true)
+    //             errors = processError(error_list)
+    //             setErrorList(errors)
+    //             showError(result)
+    //           }
 
-            }
-          });
-        } else {
-          finalSubmit()
-        }
-      }
-    }
+    //         }
+    //       });
+    //     } else {
+    //       finalSubmit()
+    //     }
+    //   }
+    // }
   }
 
   const error = (
@@ -348,10 +433,61 @@ const DashboardBranch = () => {
     </CRow>
   )
 
+  const uploadSuccess = (
+    <CRow>
+      <CCol lg={6}>
+        <CCard>
+          <CCardHeader>
+            Upload
+            <small> Status</small>
+          </CCardHeader>
+          <CCardBody>
+            <CListGroup accent>
+              <CListGroupItem accent="success" color="success">Upload Successful.</CListGroupItem>
+            </CListGroup>
+          </CCardBody>
+        </CCard>
+      </CCol>
+    </CRow>
+  )
+
+  const uploadError = (
+    <CRow>
+      <CCol lg={6}>
+        <CCard>
+          <CCardHeader>
+          Upload
+            <small> Status</small>
+          </CCardHeader>
+          <CCardBody>
+            <CListGroup accent>
+              <CListGroupItem accent="danger" color="danger">Upload Unsuccessful. Please try again.</CListGroupItem>
+            </CListGroup>
+          </CCardBody>
+        </CCard>
+      </CCol>
+    </CRow>
+  )
+
   return (
     <>
       {
         isError? error : null
+      }
+      {
+        uploadStatus? uploadStatus==="success"? uploadSuccess: uploadError : null
+      }
+      {
+        showProgress?
+        <CCard>
+        <CCardHeader>
+          Upload
+          <small> Progress</small>
+        </CCardHeader>
+        <CCardBody>
+          <CProgress animated value={progressTime} className="mb-3" />
+        </CCardBody>
+      </CCard> : null
       }
       <CRow>
         <CCol lg={9}>

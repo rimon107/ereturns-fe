@@ -49,10 +49,14 @@ export const RIT_REPORT_DATA_RESET = '[RIT] Report Data Reset';
 export const RIT_REPORT_DATA_LOAD_ERROR = '[RIT] Report Data Load Error';
 
 export const RIT_UPLOADED = '[RIT] Upload Success';
+export const RIT_UPLOAD_RESET = '[RIT] Reset Upload Status';
 export const RIT_UPLOAD_ERROR = '[RIT] Upload Error';
 
 export const RIT_FILE_LOAD = '[RIT] File Load';
 export const RIT_FILE_LOAD_ERROR = '[RIT] File Load Error';
+
+export const RIT_VALIDATION_LOAD = '[RIT] Validation Data Load';
+export const RIT_VALIDATION_LOAD_ERROR = '[RIT] Validation Data Load Error';
 
 // Institute actiontypes
 export const FINANCIAL_INSTITUTE_LOAD = '[Institute] Financial Institute Load';

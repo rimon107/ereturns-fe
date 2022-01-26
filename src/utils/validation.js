@@ -132,8 +132,9 @@ export const checkDateFormat = (base_date, i, data) => {
 
 }
 
-export const checkCCY = (i, data) => {
-
+export const checkCCY = (i, data, validation_data) => {
+    console.log("checkCCY")
+    console.log(validation_data)
     let result = {}
     let is_valid = true
     let error_msg;
@@ -145,6 +146,11 @@ export const checkCCY = (i, data) => {
         row = index+3
         if(item[i]){
             if(!format.test(item[i].toString())){
+                is_valid = false
+                error_msg = "Error at row "+row+". Please provide correct "+CCY_ID+"."
+                errors.push(error_msg)
+            }
+            if(!validation_data.includes(parseInt(item[i]))){
                 is_valid = false
                 error_msg = "Error at row "+row+". Please provide correct "+CCY_ID+"."
                 errors.push(error_msg)
@@ -196,7 +202,7 @@ export const checkFI = (fi, i, data) => {
     return result
 }
 
-export const checkMeCoa = (i, data) => {
+export const checkMeCoa = (i, data, validation_data) => {
 
     let result = {}
     let is_valid = true
@@ -209,6 +215,11 @@ export const checkMeCoa = (i, data) => {
         row = index+3
         if(item[i]){
             if(!format.test(item[i].toString())){
+                is_valid = false
+                error_msg = "Error at row "+row+". Please provide correct "+ME_COA+"."
+                errors.push(error_msg)
+            }
+            if(!validation_data.includes(parseInt(item[i]))){
                 is_valid = false
                 error_msg = "Error at row "+row+". Please provide correct "+ME_COA+"."
                 errors.push(error_msg)

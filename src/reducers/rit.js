@@ -20,7 +20,10 @@ import {
   RIT_UPLOADED,
   RIT_UPLOAD_ERROR,
   RIT_FILE_LOAD,
-  RIT_FILE_LOAD_ERROR
+  RIT_FILE_LOAD_ERROR,
+  RIT_VALIDATION_LOAD,
+  RIT_VALIDATION_LOAD_ERROR,
+  RIT_UPLOAD_RESET
 } from '../actiontypes';
 
 const initialState = {
@@ -33,7 +36,8 @@ const initialState = {
   rit: null,
   rits: null,
   report_data: null,
-  uploaded_rit: null
+  uploaded_rit: null,
+  validation_data: null
 };
 
 export const ritReducer = (state = initialState, action) => {
@@ -58,10 +62,18 @@ export const ritReducer = (state = initialState, action) => {
         ...state,
         uploaded_rit: action.payload
       };
-    case RIT_UPLOAD_ERROR:
+    case RIT_UPLOAD_RESET:
       return {
         ...state,
         uploaded_rit: null
+      };
+    case RIT_UPLOAD_ERROR:
+      const data = {
+        "status": 0
+      }
+      return {
+        ...state,
+        uploaded_rit: data
       };
     case RIT_DEFAULT_FILE_LOAD:
       return {
@@ -131,6 +143,16 @@ export const ritReducer = (state = initialState, action) => {
         ...state,
         frequency: null,
       };
+    case RIT_VALIDATION_LOAD:
+      return {
+        ...state,
+        validation_data: action.payload
+      };
+    case RIT_VALIDATION_LOAD_ERROR:
+      return {
+        ...state,
+        validation_data: null,
+      };
     case LOGOUT_SUCCESS:
       return {
         ...state,
@@ -142,7 +164,8 @@ export const ritReducer = (state = initialState, action) => {
         department_files: null,
         rits: null,
         rit: null,
-        report_data: null
+        report_data: null,
+        validation_data: null,
       };
     default:
       return state;

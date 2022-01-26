@@ -1,4 +1,5 @@
 import api from '../utils/api';
+import { useState } from "react";
 import {requestOptions, requestFormOptions} from '../utils/authHeader';
 
 import {
@@ -19,7 +20,9 @@ import {
     RIT_UPLOADED,
     RIT_UPLOAD_ERROR,
     RIT_FILE_LOAD,
-    RIT_FILE_LOAD_ERROR
+    RIT_FILE_LOAD_ERROR,
+    RIT_VALIDATION_LOAD,
+    RIT_VALIDATION_LOAD_ERROR
 } from '../actiontypes';
 
 // LOAD Rit Frequency
@@ -167,21 +170,34 @@ export const loadRitNonReportingBranchByFI = (rit, fi, base_date) => async (disp
 }
 
 // LOAD Rit Upload List
-export const uploadRit = (form_data) => async (dispatch, getState) => {
+export const uploadRit = (form_data, onUploadProgress) => async (dispatch, getState) => {
+
+  // Get token
+  const token = getState().auth.access;
+
   try {
-    const res = await api.post('rit/upload/', form_data, requestFormOptions(getState));
+    // const res = await api.post('rit/upload/', form_data, requestFormOptions(getState));
+    const res = await api.post('rit/upload/', form_data, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+        'Authorization': `Bearer ${token}`
+      },
+      onUploadProgress,
+    });
     dispatch({
       type: RIT_UPLOADED,
       payload: res.data
     });
+    return res
   } catch (err) {
     dispatch({
       type: RIT_UPLOAD_ERROR
     });
+    return err
   }
 }
 
-// LOAD Rit Departments
+// LOAD Rit Files
 export const loadRitFileById = (id) => async (dispatch, getState) => {
   try {
       const res = await api.get(`rit/files/?rit_id=${id}`, requestOptions(getState));
@@ -195,3 +211,55 @@ export const loadRitFileById = (id) => async (dispatch, getState) => {
     });
   }
 }
+
+// LOAD Rit Validation data
+export const loadRitValidationDataByCode = (code) => async (dispatch, getState) => {
+  try {
+      const res = await api.get(`rit/validation/?code=${code}`, requestOptions(getState));
+    dispatch({
+      type: RIT_VALIDATION_LOAD,
+      payload: res.data
+    });
+  } catch (err) {
+    dispatch({
+      type: RIT_VALIDATION_LOAD_ERROR
+    });
+  }
+}
+
+export const useUploadForm = () => {
+  const [isSuccess, setIsSuccess] = useState(false);
+  const [progress, setProgress] = useState(0);
+
+  const uploadForm  = (form_data) => async (dispatch, getState) =>{
+
+    // Get token
+  const token = getState().auth.access;
+
+    // const res = await api.post('rit/upload/', form_data, requestFormOptions(getState));
+    const res = await api.post('rit/upload/', form_data, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+        'Authorization': `Bearer ${token}`
+      },
+      onUploadProgress: (progressEvent) => {
+        const progress = (progressEvent.loaded / progressEvent.total) * 50;
+        setProgress(progress);
+      },
+      onDownloadProgress: (progressEvent) => {
+        const progress = 50 + (progressEvent.loaded / progressEvent.total) * 50;
+        console.log(progress);
+        setProgress(progress);
+      },
+    });
+
+    await new Promise((resolve) => {
+      setTimeout(() => resolve("success"), 500);
+    });
+
+    setIsSuccess(true)
+  };
+
+  return { uploadForm, isSuccess, progress };
+};
+
