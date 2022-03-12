@@ -6,7 +6,8 @@ import {requestOptions} from './authHeader';
 
 
 const api = axios.create({
-  baseURL: 'http://localhost:8000/api/v1',
+  baseURL: 'http://10.41.230.83:8000/api/v1',
+  // baseURL: 'http://localhost:8000/api/v1',
     headers: {
       'Content-Type': 'application/json'
     }
@@ -17,11 +18,15 @@ api.interceptors.response.use(
     return res;
   },
   (error) => {
-    console.log(error);
-    // store.dispatch({ type: LOGOUT_SUCCESS });
-    if (error?.response?.status === 401) {
+    
+    if (error?.response==null) {
+      console.log("service unavailable.")
+    }
+    else if (error?.response?.status === 401) {
       store.dispatch({ type: LOGOUT_SUCCESS });
     }
+
+    return error;
   }
 );
 

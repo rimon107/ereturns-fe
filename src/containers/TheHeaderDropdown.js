@@ -7,20 +7,18 @@ import {
   CImg
 } from '@coreui/react';
 import CIcon from '@coreui/icons-react';
-import { Redirect } from 'react-router-dom';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { logout } from '../actions/auth';
 import { profile } from '../actions/user';
 
-const TheHeaderDropdown = ({ auth: { isAuthenticated, user }, logout, profile }) => {
-  if (!isAuthenticated) {
-    return <Redirect to='/login' />;
-  }
+const TheHeaderDropdown = ({ auth: { user }, logout, profile }) => {
+
   const onProfileClick = async e => {
     // e.preventDefault();
     profile(user.id);
   };
+  
   return (
     <CDropdown
       inNav

@@ -4,6 +4,7 @@ import { coreReducer } from './core';
 import { userReducer } from './user';
 import { ritReducer } from './rit';
 import { instituteReducer } from './institute';
+import { fileReducer } from './file';
 import { LOGOUT_SUCCESS } from '../actiontypes';
 
 const appReducer = combineReducers({
@@ -11,7 +12,8 @@ const appReducer = combineReducers({
   core: coreReducer,
   user: userReducer,
   rit: ritReducer,
-  institute: instituteReducer
+  institute: instituteReducer,
+  file: fileReducer
 });
 
 const rootReducer = (state = {}, action) => {
