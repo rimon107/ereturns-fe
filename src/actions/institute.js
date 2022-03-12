@@ -53,7 +53,6 @@ export const loadInstituteUserCount = (fi_id, branch_id) => async (dispatch, get
     } else {
       res = await api.get(`institutes/user-count?fi_id=${fi_id}`);
     }
-    
     dispatch({
       type: FINANCIAL_INSTITUTE_USER_COUNT_LOAD,
       payload: res.data

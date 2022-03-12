@@ -70,11 +70,17 @@ export const updateUserStatusAfterLogout = (id) => async (dispatch, getState) =>
 // LOAD ACTIVE, INACTIVE, ONLINE USER COUNT
 export const members = () => async (dispatch, getState) => {
 
+  try {
     const res = await api.get('users/members/', requestOptions(getState));
     dispatch({
         type: MEMBER_COUNT,
         payload: res.data
     });
+  } catch (err) {
+    dispatch({
+      type: USER_LOAD_ERROR
+    });
+  }
     
 }
 

@@ -66,7 +66,7 @@ const TheHeader = () => {
           </CRow>
           <div className="d-md-down-none mfe-2 c-subheader-nav justify-content-end">
             <div className="text-right">
-              <small><b>{user?.name},</b> {user?.department}, {user?.branch?.name}, {user?.financial_institute?.name}</small>
+              <small><b>{user?.name},</b> {user?.department}, {user?.branch?.name} {user?.branch?.name? ",": ""} {user?.financial_institute?.name}</small>
             </div>
           </div>
           
