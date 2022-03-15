@@ -24,6 +24,7 @@ import CIcon from "@coreui/icons-react";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import { login } from "../../../actions/auth";
+import { ERROR } from "../../../utils/messages";
 
 const Login = ({ login, isAuthenticated }) => {
   const history = useHistory();
@@ -67,7 +68,7 @@ const Login = ({ login, isAuthenticated }) => {
     if (!username) {
       let resMsg;
       let responseMsg = [];
-      const msg = "Please provide username.";
+      const msg = ERROR.USERNAME;
       responseMsg.push(msg);
       resMsg = processResponse(responseMsg, "danger");
       setResponseList(resMsg);
@@ -78,7 +79,7 @@ const Login = ({ login, isAuthenticated }) => {
     } else if (!password) {
       let resMsg;
       let responseMsg = [];
-      const msg = "Please provide password.";
+      const msg = ERROR.PASSWORD;
       responseMsg.push(msg);
       resMsg = processResponse(responseMsg, "danger");
       setResponseList(resMsg);
@@ -105,8 +106,7 @@ const Login = ({ login, isAuthenticated }) => {
           } else if (response.status === 500) {
             let resMsg;
             let responseMsg = [];
-            const msg =
-              "Internal Server Error. Please contact Bangladesh Bank Admin for further query.";
+            const msg = ERROR.SERVER_ERROR;
             responseMsg.push(msg);
             resMsg = processResponse(responseMsg, "danger");
             setResponseList(resMsg);
@@ -116,8 +116,7 @@ const Login = ({ login, isAuthenticated }) => {
           } else {
             let resMsg;
             let responseMsg = [];
-            const msg =
-              "Internal Server Error. Please contact Bangladesh Bank Admin for further query.";
+            const msg = ERROR.SERVER_ERROR;
             responseMsg.push(msg);
             resMsg = processResponse(responseMsg, "danger");
             setResponseList(resMsg);

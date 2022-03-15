@@ -109,6 +109,7 @@ const DashboardBranch = ({
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const loadRit = (value) => {
+    clearRitValue();
     loadRitFeatures(value);
   };
 

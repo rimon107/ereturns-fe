@@ -34,6 +34,7 @@ import { register } from "../../../actions/auth";
 import Select from "react-select";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
+import { ERROR } from "../../../utils/messages";
 
 const Register = ({
   institute: { institutes, branches, users },
@@ -140,7 +141,7 @@ const Register = ({
 
   const onChangeReportTypeBranch = (e) => {
     if (!fi_id) {
-      setModalData("Please select Bank/NBFI first.");
+      setModalData(ERROR.SELECT_FI);
       setModal(true);
     } else {
       setReportTypeBranchChecked(true);
@@ -153,7 +154,7 @@ const Register = ({
 
   const onChangeReportTypeHO = (e) => {
     if (!fi_id) {
-      setModalData("Please select Bank/NBFI first.");
+      setModalData(ERROR.SELECT_FI);
       setModal(true);
     } else {
       setReportTypeBranchChecked(false);
@@ -165,13 +166,13 @@ const Register = ({
 
       const ho_users = users ? users["ho_users"] : -1;
       if (ho_users === -1) {
-        setModalData("Data is not loaded correctly. Please try again.");
+        setModalData(ERROR.DATA_LOAD_ERROR);
         setModal(true);
       } else if (ho_users > -1 && ho_users < 5) {
         setHo(true);
         setFormData({ ...formData, [e.target.name]: e.target.value });
       } else {
-        setModalData("Head Office user limit exceeded.");
+        setModalData(ERROR.HO_USER_LIMIT);
         setModal(true);
       }
     }
@@ -190,21 +191,17 @@ const Register = ({
       const branch_users = users["branch_users"];
       const ho_users = users ? users["ho_users"] : -1;
       if (ho_users === -1) {
-        setModalData("Data is not loaded correctly. Please try again.");
+        setModalData(ERROR.DATA_LOAD_ERROR);
         setModal(true);
       } else if (branch_users > -1 && branch_users < 2) {
         setNewBranch(true);
       } else {
-        setModalData("Branch user limit exceeded.");
+        setModalData(ERROR.BRANCH_USER_LIMIT);
         setModal(true);
-        console.log("Branch user limit exceeded.");
+        console.log(ERROR.BRANCH_USER_LIMIT);
       }
     } else {
-      setModalData(
-        "Wrong SBS Code. " +
-          "" +
-          " Please Contact With the Authenticated Person."
-      );
+      setModalData(ERROR.WRONG_SBS_CODE);
       setModal(true);
       setNewBranch(false);
     }
@@ -280,8 +277,7 @@ const Register = ({
           } else if (response.status === 500) {
             let resMsg;
             let responseMsg = [];
-            const msg =
-              "Internal Server Error. Please contact Bangladesh Bank Admin for further query.";
+            const msg = ERROR.SERVER_ERROR;
             setModalData(msg);
             setModal(true);
 
@@ -292,8 +288,7 @@ const Register = ({
           } else {
             let resMsg;
             let responseMsg = [];
-            const msg =
-              "Somthings went wrong. Please contact Bangladesh Bank Admin for further query.";
+            const msg = ERROR.OTHER_ERROR;
             setModalData(msg);
             setModal(true);
 
@@ -350,8 +345,7 @@ const Register = ({
           } else {
             let resMsg;
             let responseMsg = [];
-            const msg =
-              "Somthings went wrong. Please contact Bangladesh Bank Admin for further query.";
+            const msg = ERROR.OTHER_ERROR;
             setModalData(msg);
             setModal(true);
 

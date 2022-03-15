@@ -31,15 +31,21 @@ export const dataValidation = async (
       const columns = data[1];
       const validate_data = data.slice(2, data.length + 1);
       columns.forEach((element, index) => {
-        if (element.toString() === COLUMNS.DATE) {
-          const date_result = checkDateFormat(base_date, index, validate_data);
+        let column = element.toString().trim();
+        if (COLUMNS.DATE.includes(column)) {
+          const date_result = checkDateFormat(
+            column,
+            base_date,
+            index,
+            validate_data
+          );
           if (!date_result.is_valid) {
             is_valid = false;
             error_list.push(...date_result.errors);
           }
-        }
-        if (element.toString() === COLUMNS.CCY_ID) {
-          const ccy_result = checkCCY(
+        } else if (COLUMNS.CCY.includes(column)) {
+          const ccy_result = checkDynamicValidation(
+            column,
             index,
             validate_data,
             validation_data["currency"]
@@ -48,9 +54,9 @@ export const dataValidation = async (
             is_valid = false;
             error_list.push(...ccy_result.errors);
           }
-        }
-        if (element.toString() === COLUMNS.FI_ID) {
+        } else if (COLUMNS.FI.includes(column)) {
           const fi_result = checkFI(
+            column,
             user.financial_institute.id,
             index,
             validate_data
@@ -59,9 +65,20 @@ export const dataValidation = async (
             is_valid = false;
             error_list.push(...fi_result.errors);
           }
-        }
-        if (element.toString() === COLUMNS.ME_COA) {
-          const mecoa_result = checkMeCoa(
+        } else if (COLUMNS.FACILITY_TYPE.includes(column)) {
+          const ccy_result = checkDynamicValidation(
+            column,
+            index,
+            validate_data,
+            validation_data["FACILITY_TYPE"]
+          );
+          if (!ccy_result.is_valid) {
+            is_valid = false;
+            error_list.push(...ccy_result.errors);
+          }
+        } else if (COLUMNS.COA.includes(column)) {
+          const mecoa_result = checkDynamicValidation(
+            column,
             index,
             validate_data,
             validation_data["coa"]
@@ -70,29 +87,41 @@ export const dataValidation = async (
             is_valid = false;
             error_list.push(...mecoa_result.errors);
           }
-        }
-        if (element.toString() === COLUMNS.AMOUNT) {
-          const amount_result = checkAmount(index, validate_data);
-          if (!amount_result.is_valid) {
-            is_valid = false;
-            error_list.push(...amount_result.errors);
-          }
-        }
-        if (element.toString() === COLUMNS.EXCHANGE_RATE) {
-          const exchange_rate_result = checkExchangeRate(index, validate_data);
-          if (!exchange_rate_result.is_valid) {
-            is_valid = false;
-            error_list.push(...exchange_rate_result.errors);
-          }
-        }
-        if (element.toString() === COLUMNS.OPEN_POSITION_LIMIT) {
-          const open_position_limit_result = checkOpenPositionLimit(
+        } else if (COLUMNS.DECIMAL_EMPTY.includes(column)) {
+          const decimal_empty_result = checkDecimalEmpty(
+            column,
             index,
             validate_data
           );
-          if (!open_position_limit_result.is_valid) {
+          if (!decimal_empty_result.is_valid) {
             is_valid = false;
-            error_list.push(...open_position_limit_result.errors);
+            error_list.push(...decimal_empty_result.errors);
+          }
+        } else if (COLUMNS.DECIMAL_NOT_EMPTY.includes(column)) {
+          const decimal_not_empty_result = checkDecimalNotEmpty(
+            column,
+            index,
+            validate_data
+          );
+          if (!decimal_not_empty_result.is_valid) {
+            is_valid = false;
+            error_list.push(...decimal_not_empty_result.errors);
+          }
+        } else if (COLUMNS.INTEGER_NOT_EMPTY.includes(column)) {
+          const integer_not_empty_result = checkIntegerNotEmpty(
+            column,
+            index,
+            validate_data
+          );
+          if (!integer_not_empty_result.is_valid) {
+            is_valid = false;
+            error_list.push(...integer_not_empty_result.errors);
+          }
+        } else {
+          if (column.length !== 0) {
+            is_valid = false;
+            let error = column + " column not found in the validation list.";
+            error_list.push(error);
           }
         }
       });
@@ -237,7 +266,100 @@ export const firstColumnValidate = (fi, branch, rit, data) => {
   return result;
 };
 
-export const checkDateFormat = (base_date, i, data) => {
+export const checkDecimalEmpty = (column, i, data) => {
+  console.log("checking " + column + "...");
+  let result = {};
+  let is_valid = true;
+  let error_msg;
+  let row;
+  let errors = [];
+  const format = new RegExp(/^-?\d+(\.\d{1,4})?$/);
+
+  data.forEach((item, index) => {
+    row = index + 3;
+    if (item[i]) {
+      if (!format.test(item[i].toString())) {
+        is_valid = false;
+        error_msg =
+          "Error at row " + row + ". Please provide correct " + column + ".";
+        errors.push(error_msg);
+      }
+    }
+  });
+
+  result["is_valid"] = is_valid;
+  result["errors"] = errors;
+
+  return result;
+};
+
+export const checkDecimalNotEmpty = (column, i, data) => {
+  console.log("checking " + column + "...");
+  let result = {};
+  let is_valid = true;
+  let error_msg;
+  let row;
+  let errors = [];
+  const format = new RegExp(/^\d+(\.\d{1,4})?$/);
+
+  data.forEach((item, index) => {
+    row = index + 3;
+    if (item[i]) {
+      if (!format.test(item[i].toString())) {
+        is_valid = false;
+        error_msg =
+          "Error at row " + row + ". Please provide correct " + column + ".";
+        errors.push(error_msg);
+      }
+    } else {
+      if (item.length !== 1) {
+        is_valid = false;
+        error_msg = "Error at row " + row + ". Empty " + column + ".";
+        errors.push(error_msg);
+      }
+    }
+  });
+
+  result["is_valid"] = is_valid;
+  result["errors"] = errors;
+
+  return result;
+};
+
+export const checkIntegerNotEmpty = (column, i, data) => {
+  console.log("checking " + column + "...");
+  let result = {};
+  let is_valid = true;
+  let error_msg;
+  let row;
+  let errors = [];
+  const format = new RegExp(/^\d+$/);
+
+  data.forEach((item, index) => {
+    row = index + 3;
+    if (item[i]) {
+      if (!format.test(item[i].toString())) {
+        is_valid = false;
+        error_msg =
+          "Error at row " + row + ". Please provide correct " + column + ".";
+        errors.push(error_msg);
+      }
+    } else {
+      if (item.length !== 1) {
+        is_valid = false;
+        error_msg = "Error at row " + row + ". Empty " + column + ".";
+        errors.push(error_msg);
+      }
+    }
+  });
+
+  result["is_valid"] = is_valid;
+  result["errors"] = errors;
+
+  return result;
+};
+
+export const checkDateFormat = (column, base_date, i, data) => {
   console.log("checking Date Format...");
   const date = new Date(base_date);
   const formatted_date =
@@ -247,7 +369,7 @@ export const checkDateFormat = (base_date, i, data) => {
     "-" +
     date.toLocaleDateString("en-US", { year: "2-digit" });
   const format = new RegExp(
-    /^\d\d-(Jan|Feb|Mar|Apr|May|Jun|July|Aug|Sep|Oct|Nov|Dec)-\d/,
+    /^\d?\d-(Jan|Feb|Mar|Apr|May|Jun|July|Aug|Sep|Oct|Nov|Dec)-\d/,
     "i"
   );
   let result = {};
@@ -261,24 +383,25 @@ export const checkDateFormat = (base_date, i, data) => {
     if (item[i]) {
       if (!format.test(item[i])) {
         is_valid = false;
-        error_msg =
-          "Error at row " + row + ". Wrong " + COLUMNS.DATE + " format.";
+        error_msg = "Error at row " + row + ". Wrong " + column + " format.";
         errors.push(error_msg);
       }
-      if (item[i].toString() !== formatted_date) {
+      const item_date = new Date(item[i]);
+      const item_formatted_date =
+        item_date.toLocaleDateString("en-US", { day: "2-digit" }) +
+        "-" +
+        item_date.toLocaleDateString("en-US", { month: "short" }) +
+        "-" +
+        item_date.toLocaleDateString("en-US", { year: "2-digit" });
+      if (formatted_date !== item_formatted_date) {
         is_valid = false;
-        error_msg =
-          "Error at row " +
-          row +
-          ". Reporting " +
-          COLUMNS.DATE +
-          " is not matching.";
+        error_msg = "Error at row " + row + ". " + column + " is not matching.";
         errors.push(error_msg);
       }
     } else {
       if (item.length !== 1) {
         is_valid = false;
-        error_msg = "Error at row " + row + ". Empty " + COLUMNS.DATE + ".";
+        error_msg = "Error at row " + row + ". Empty " + column + ".";
         errors.push(error_msg);
       }
     }
@@ -290,46 +413,36 @@ export const checkDateFormat = (base_date, i, data) => {
   return result;
 };
 
-export const checkCCY = (i, data, validation_data) => {
-  console.log("checking CCY...");
+export const checkDynamicValidation = (column, i, data, validation_data) => {
+  console.log("checking " + column + "...");
   let result = {};
   let is_valid = true;
   let error_msg;
   let row;
-  let ccy;
   let errors = [];
   const format = new RegExp(/^\d+$/);
 
   data.forEach((item, index) => {
     row = index + 3;
-    ccy = item[i];
-    if (ccy) {
-      if (!format.test(ccy.toString())) {
+    if (item[i]) {
+      if (!format.test(item[i].toString())) {
         is_valid = false;
         error_msg =
-          "Error at row " +
-          row +
-          ". Please provide correct " +
-          COLUMNS.CCY_ID +
-          ".";
+          "Error at row " + row + ". Please provide correct " + column + ".";
         errors.push(error_msg);
       }
       if (validation_data.length > 0) {
-        if (!validation_data.includes(parseInt(ccy))) {
+        if (!validation_data.includes(parseInt(item[i]))) {
           is_valid = false;
           error_msg =
-            "Error at row " +
-            row +
-            ". Please provide correct " +
-            COLUMNS.CCY_ID +
-            ".";
+            "Error at row " + row + ". Please provide correct " + column + ".";
           errors.push(error_msg);
         }
       }
     } else {
       if (item.length !== 1) {
         is_valid = false;
-        error_msg = "Error at row " + row + ". Empty " + COLUMNS.CCY_ID + ".";
+        error_msg = "Error at row " + row + ". Empty " + column + ".";
         errors.push(error_msg);
       }
     }
@@ -341,7 +454,7 @@ export const checkCCY = (i, data, validation_data) => {
   return result;
 };
 
-export const checkFI = (fi, i, data) => {
+export const checkFI = (column, fi, i, data) => {
   console.log("checking FI...");
   let result = {};
   let is_valid = true;
@@ -357,177 +470,13 @@ export const checkFI = (fi, i, data) => {
       if (!format.test(d_fi.toString()) || d_fi.toString() !== fi.toString()) {
         is_valid = false;
         error_msg =
-          "Error at row " +
-          row +
-          ". Please provide correct " +
-          COLUMNS.FI_ID +
-          ".";
+          "Error at row " + row + ". Please provide correct " + column + ".";
         errors.push(error_msg);
       }
     } else {
       if (item.length !== 1) {
         is_valid = false;
-        error_msg = "Error at row " + row + ". Empty " + COLUMNS.FI_ID + ".";
-        errors.push(error_msg);
-      }
-    }
-  });
-
-  result["is_valid"] = is_valid;
-  result["errors"] = errors;
-
-  return result;
-};
-
-export const checkMeCoa = (i, data, validation_data) => {
-  console.log("checking ME COA...");
-  let result = {};
-  let is_valid = true;
-  let error_msg;
-  let row;
-  let errors = [];
-  const format = new RegExp(/^\d+$/);
-
-  data.forEach((item, index) => {
-    row = index + 3;
-    if (item[i]) {
-      if (!format.test(item[i].toString())) {
-        is_valid = false;
-        error_msg =
-          "Error at row " +
-          row +
-          ". Please provide correct " +
-          COLUMNS.ME_COA +
-          ".";
-        errors.push(error_msg);
-      }
-      if (validation_data.length > 0) {
-        if (!validation_data.includes(parseInt(item[i]))) {
-          is_valid = false;
-          error_msg =
-            "Error at row " +
-            row +
-            ". Please provide correct " +
-            COLUMNS.ME_COA +
-            ".";
-          errors.push(error_msg);
-        }
-      }
-    } else {
-      if (item.length !== 1) {
-        is_valid = false;
-        error_msg = "Error at row " + row + ". Empty " + COLUMNS.ME_COA + ".";
-        errors.push(error_msg);
-      }
-    }
-  });
-
-  result["is_valid"] = is_valid;
-  result["errors"] = errors;
-
-  return result;
-};
-
-export const checkAmount = (i, data) => {
-  console.log("checking Amount...");
-  let result = {};
-  let is_valid = true;
-  let error_msg;
-  let row;
-  let errors = [];
-  const format = new RegExp(/^-?\d+(\.\d{1,4})?$/);
-
-  data.forEach((item, index) => {
-    row = index + 3;
-    if (item[i]) {
-      if (!format.test(item[i].toString())) {
-        is_valid = false;
-        error_msg =
-          "Error at row " +
-          row +
-          ". Please provide correct " +
-          COLUMNS.AMOUNT +
-          ".";
-        errors.push(error_msg);
-      }
-    }
-  });
-
-  result["is_valid"] = is_valid;
-  result["errors"] = errors;
-
-  return result;
-};
-
-export const checkExchangeRate = (i, data) => {
-  console.log("checking Exchange Rate...");
-  let result = {};
-  let is_valid = true;
-  let error_msg;
-  let row;
-  let errors = [];
-  const format = new RegExp(/^\d+(\.\d{1,4})?$/);
-
-  data.forEach((item, index) => {
-    row = index + 3;
-    if (item[i]) {
-      if (!format.test(item[i].toString())) {
-        is_valid = false;
-        error_msg =
-          "Error at row " +
-          row +
-          ". Please provide correct " +
-          COLUMNS.EXCHANGE_RATE +
-          ".";
-        errors.push(error_msg);
-      }
-    } else {
-      if (item.length !== 1) {
-        is_valid = false;
-        error_msg =
-          "Error at row " + row + ". Empty " + COLUMNS.EXCHANGE_RATE + ".";
-        errors.push(error_msg);
-      }
-    }
-  });
-
-  result["is_valid"] = is_valid;
-  result["errors"] = errors;
-
-  return result;
-};
-
-export const checkOpenPositionLimit = (i, data) => {
-  console.log("checking Open PositionLimit...");
-  let result = {};
-  let is_valid = true;
-  let error_msg;
-  let row;
-  let errors = [];
-  const format = new RegExp(/^\d+$/);
-
-  data.forEach((item, index) => {
-    row = index + 3;
-    if (item[i]) {
-      if (!format.test(item[i].toString())) {
-        is_valid = false;
-        error_msg =
-          "Error at row " +
-          row +
-          ". Please provide correct " +
-          COLUMNS.OPEN_POSITION_LIMIT +
-          ".";
-        errors.push(error_msg);
-      }
-    } else {
-      if (item.length !== 1) {
-        is_valid = false;
-        error_msg =
-          "Error at row " +
-          row +
-          ". Empty " +
-          COLUMNS.OPEN_POSITION_LIMIT +
-          ".";
+        error_msg = "Error at row " + row + ". Empty " + column + ".";
         errors.push(error_msg);
       }
     }
