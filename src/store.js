@@ -1,9 +1,9 @@
-import { createStore, applyMiddleware } from 'redux';
-import { composeWithDevTools } from 'redux-devtools-extension';
-import thunk from 'redux-thunk';
-import rootReducer from './reducers';
-import StateLoader from "./utils/statePersist"
-import throttle from 'lodash/throttle';
+import { createStore, applyMiddleware } from "redux";
+import { composeWithDevTools } from "redux-devtools-extension";
+import thunk from "redux-thunk";
+import rootReducer from "./reducers";
+import StateLoader from "./utils/statePersist";
+import throttle from "lodash/throttle";
 
 const stateLoader = new StateLoader();
 
@@ -15,9 +15,10 @@ const store = createStore(
   composeWithDevTools(applyMiddleware(...middleware))
 );
 
-store.subscribe(throttle(() => {
-  stateLoader.saveState(store.getState());
-}, 1000));
-
+store.subscribe(
+  throttle(() => {
+    stateLoader.saveState(store.getState());
+  }, 1000)
+);
 
 export default store;
