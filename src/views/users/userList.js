@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { useHistory } from 'react-router-dom';
+import React, { useEffect, useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { useHistory } from "react-router-dom";
 import {
   CBadge,
   CCard,
@@ -10,76 +10,83 @@ import {
   CDataTable,
   CRow,
   CButton,
-  CCollapse
-} from '@coreui/react';
+  CCollapse,
+} from "@coreui/react";
 
-import { loadUserList } from '../../actions/user';
+import { loadUserList } from "../../actions/user";
 
-const getBadge = status => {
+const getBadge = (status) => {
   switch (status) {
-    case "Online": return 'success'
-    case "Offline": return 'danger'
-    case true: return 'primary'
-    case false: return 'warning'
-    default: return 'primary'
+    case "Online":
+      return "success";
+    case "Offline":
+      return "danger";
+    case true:
+      return "primary";
+    case false:
+      return "warning";
+    default:
+      return "primary";
   }
-}
+};
 const fields = [
   // { key: 'sl', label: '#' },
   // { key: 'id', label: 'Id' },
-  { key: 'no', label: '#' },
-  { key: 'name', label: 'Name', _style: { width: '20%'}},
-  { key: 'branch', label: 'Branch', sorter: false, },
-  { key: 'email', _style: { width: '20%'} },
-  { key: 'mobile' },
-  { key: 'status', label: 'Status' },
-  { key: 'is_active', label: 'Active' },
+  { key: "no", label: "#" },
+  { key: "name", label: "Name", _style: { width: "20%" } },
+  { key: "branch", label: "Branch", sorter: false },
+  { key: "email", _style: { width: "20%" } },
+  { key: "mobile" },
+  { key: "status", label: "Status" },
+  { key: "is_active", label: "Active" },
   {
-    key: 'toggle_button',
-    label: '',
-    _style: { width: '1%' },
+    key: "toggle_button",
+    label: "",
+    _style: { width: "1%" },
     sorter: false,
-    filter: false
+    filter: false,
   },
   {
-    key: 'edit_button',
-    label: '',
-    _style: { width: '1%' },
+    key: "edit_button",
+    label: "",
+    _style: { width: "1%" },
     sorter: false,
-    filter: false
-  }
-]
-
+    filter: false,
+  },
+];
 
 const UserList = () => {
-    const dispatch = useDispatch()
-    const history = useHistory()
-    const user_list = useSelector(state => state.user.users)
+  const dispatch = useDispatch();
+  const history = useHistory();
+  const user_list = useSelector((state) => state.user.users);
 
-    useEffect(() => {
-        dispatch(loadUserList());
-    }, []) // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    dispatch(loadUserList());
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-    const [details, setDetails] = useState([])
+  const [details, setDetails] = useState([]);
 
-    const toggleDetails = (index) => {
-      const position = details.indexOf(index)
-      let newDetails = details.slice()
-      if (position !== -1) {
-        newDetails.splice(position, 1)
-      } else {
-        newDetails = [...details, index]
-      }
-      setDetails(newDetails)
+  const toggleDetails = (index) => {
+    const position = details.indexOf(index);
+    let newDetails = details.slice();
+    if (position !== -1) {
+      newDetails.splice(position, 1);
+    } else {
+      newDetails = [...details, index];
     }
+    setDetails(newDetails);
+  };
 
-    const customizeDate = (date) => {
-      if(date) {
-        return new Date(date)
-        .toLocaleDateString("sq-AL",{ year: 'numeric', month: '2-digit', day: '2-digit' })
-      }
+  const customizeDate = (date) => {
+    if (date) {
+      return new Date(date).toLocaleDateString("sq-AL", {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+      });
     }
-    
+  };
+
   return (
     <>
       <CRow>
@@ -89,53 +96,36 @@ const UserList = () => {
               User <small>List</small>
             </CCardHeader>
             <CCardBody>
-            <CDataTable
-              items={user_list}
-              fields={fields}
-              hover
-              tableFilter
-              itemsPerPageSelect
-              striped
-              bordered
-              size="md"
-              itemsPerPage={10}
-              sorter
-              pagination
-              scopedSlots = {{
-                'no':
-                  (item, index)=>(
-                    <td>
-                      {
-                        index = index+1
-                      }
-                    </td>
-                  ),
-                'branch':
-                  (item)=>(
-                    <td>
-                      {
-                      item.branch?.name.toString()
-                      }
-                    </td>
-                  ),
-                'status':
-                  (item)=>(
+              <CDataTable
+                items={user_list}
+                fields={fields}
+                hover
+                tableFilter
+                itemsPerPageSelect
+                striped
+                bordered
+                size="md"
+                itemsPerPage={10}
+                sorter
+                pagination
+                scopedSlots={{
+                  no: (item, index) => <td>{(index = index + 1)}</td>,
+                  branch: (item) => <td>{item.branch?.name?.toString()}</td>,
+                  status: (item) => (
                     <td>
                       <CBadge color={getBadge(item.status)}>
                         {item.status}
                       </CBadge>
                     </td>
                   ),
-                  'is_active':
-                  (item)=>(
+                  is_active: (item) => (
                     <td>
                       <CBadge color={getBadge(item.is_active)}>
                         {item.is_active.toString()}
                       </CBadge>
                     </td>
                   ),
-                  'toggle_button':
-                  (item, index)=>{
+                  toggle_button: (item, index) => {
                     return (
                       <td className="py-2">
                         <CButton
@@ -143,34 +133,60 @@ const UserList = () => {
                           variant="outline"
                           shape="square"
                           size="sm"
-                          onClick={()=>{toggleDetails(index)}}
+                          onClick={() => {
+                            toggleDetails(index);
+                          }}
                         >
-                          {details.includes(index) ? 'Hide' : 'Show'}
+                          {details.includes(index) ? "Hide" : "Show"}
                         </CButton>
                       </td>
-                    )
+                    );
                   },
-                  'details':
-                  (item, index)=>{
+                  details: (item, index) => {
                     return (
-                    <CCollapse show={details.includes(index)}>
-                      <CCardBody>
-                        <p className="text-muted"><b>Username:</b> {item.username}</p>
-                        <p className="text-muted"><b>Name:</b> {item.name}</p>
-                        <p className="text-muted"><b>Bank:</b> {item.financial_institute?.name.toString()}</p>
-                        <p className="text-muted"><b>Branch:</b> {item.branch?.name.toString()}</p>
-                        <p className="text-muted"><b>Department:</b> {item.department}</p>
-                        <p className="text-muted"><b>Designation:</b> {item.designation}</p>
-                        <p className="text-muted"><b>Email:</b> {item.email}</p>
-                        <p className="text-muted"><b>Mobile:</b> {item.mobile}</p>
-                        <p className="text-muted"><b>Phone:</b> {item.phone}</p>
-                        <p className="text-muted"><b>Approved date:</b> {customizeDate(item.approved_time)}</p>
-                        <p className="text-muted"><b>Last Login date:</b> {customizeDate(item.approved_time)}</p>
-                      </CCardBody>
-                    </CCollapse>
-                  )},
-                  'edit_button':
-                  (item)=>{
+                      <CCollapse show={details.includes(index)}>
+                        <CCardBody>
+                          <p className="text-muted">
+                            <b>Username:</b> {item.username}
+                          </p>
+                          <p className="text-muted">
+                            <b>Name:</b> {item.name}
+                          </p>
+                          <p className="text-muted">
+                            <b>Bank:</b>{" "}
+                            {item.financial_institute?.name.toString()}
+                          </p>
+                          <p className="text-muted">
+                            <b>Branch:</b> {item.branch?.name?.toString()}
+                          </p>
+                          <p className="text-muted">
+                            <b>Department:</b> {item.department}
+                          </p>
+                          <p className="text-muted">
+                            <b>Designation:</b> {item.designation}
+                          </p>
+                          <p className="text-muted">
+                            <b>Email:</b> {item.email}
+                          </p>
+                          <p className="text-muted">
+                            <b>Mobile:</b> {item.mobile}
+                          </p>
+                          <p className="text-muted">
+                            <b>Phone:</b> {item.phone}
+                          </p>
+                          <p className="text-muted">
+                            <b>Approved date:</b>{" "}
+                            {customizeDate(item.approved_time)}
+                          </p>
+                          <p className="text-muted">
+                            <b>Last Login date:</b>{" "}
+                            {customizeDate(item.approved_time)}
+                          </p>
+                        </CCardBody>
+                      </CCollapse>
+                    );
+                  },
+                  edit_button: (item) => {
                     return (
                       <td className="py-2">
                         <CButton
@@ -178,21 +194,23 @@ const UserList = () => {
                           variant="outline"
                           shape="square"
                           size="sm"
-                          onClick={() => history.push(`/users/update/${item.id}`)}
+                          onClick={() =>
+                            history.push(`/users/update/${item.id}`)
+                          }
                         >
                           {"Edit"}
                         </CButton>
                       </td>
-                    )
+                    );
                   },
-              }}
-            />
+                }}
+              />
             </CCardBody>
           </CCard>
         </CCol>
       </CRow>
     </>
-  )
-}
+  );
+};
 
-export default UserList
+export default UserList;
