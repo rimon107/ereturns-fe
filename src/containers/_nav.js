@@ -225,56 +225,6 @@ export const bank_admin_nav = [
   },
   {
     _tag: "CSidebarNavTitle",
-    _children: ["Reports"],
-  },
-  {
-    _tag: "CSidebarNavDropdown",
-    name: "Upload Status Report",
-    route: "",
-    icon: "cil-cloud-upload",
-    _children: [
-      {
-        _tag: "CSidebarNavItem",
-        name: "RIT & Base Date Wise",
-        to: "/report/rit-base-date-wise",
-      },
-      {
-        _tag: "CSidebarNavItem",
-        name: "RIT & Bank Wise",
-        to: "/report/rit-bank-wise",
-      },
-    ],
-  },
-  {
-    _tag: "CSidebarNavItem",
-    name: "Non Reporting Bank/Branch",
-    to: "/report/non-reporting-bank-branch",
-    icon: "cil-credit-card",
-  },
-  {
-    _tag: "CSidebarNavTitle",
-    _children: ["Modules"],
-  },
-  {
-    _tag: "CSidebarNavDropdown",
-    name: "RIT",
-    route: "",
-    icon: "cil-memory",
-    _children: [
-      {
-        _tag: "CSidebarNavItem",
-        name: "RIT Download",
-        to: "/rit/download",
-      },
-      {
-        _tag: "CSidebarNavItem",
-        name: "RIT Details",
-        to: "/rit",
-      },
-    ],
-  },
-  {
-    _tag: "CSidebarNavTitle",
     _children: ["Settings"],
   },
   {
@@ -318,22 +268,6 @@ export const bb_admin_nav = [
     name: "Home",
     to: "/",
     icon: "cil-laptop",
-  },
-  {
-    _tag: "CSidebarNavTitle",
-    _children: ["Upload"],
-  },
-  {
-    _tag: "CSidebarNavItem",
-    name: "Upload RIT",
-    to: "/rit/upload",
-    icon: "cil-cloud-upload",
-  },
-  {
-    _tag: "CSidebarNavItem",
-    name: "Upload Status",
-    to: "/rit/upload-status",
-    icon: "cil-cloud-upload",
   },
   {
     _tag: "CSidebarNavTitle",

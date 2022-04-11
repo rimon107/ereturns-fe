@@ -155,7 +155,7 @@ const DashboardHO = ({
                 pagination
                 scopedSlots={{
                   no: (item, index) => <td>{(index = index + 1)}</td>,
-                  branch: (item) => <td>{item.branch?.name.toString()}</td>,
+                  branch: (item) => <td>{item.branch?.name?.toString()}</td>,
                   status: (item) => (
                     <td>
                       <CBadge color={getBadge(item.status)}>
@@ -166,7 +166,7 @@ const DashboardHO = ({
                   is_active: (item) => (
                     <td>
                       <CBadge color={getBadge(item.is_active)}>
-                        {item.is_active.toString()}
+                        {item.is_active?.toString()}
                       </CBadge>
                     </td>
                   ),
@@ -199,10 +199,10 @@ const DashboardHO = ({
                           </p>
                           <p className="text-muted">
                             <b>Bank:</b>{" "}
-                            {item.financial_institute?.name.toString()}
+                            {item.financial_institute?.name?.toString()}
                           </p>
                           <p className="text-muted">
-                            <b>Branch:</b> {item.branch?.name.toString()}
+                            <b>Branch:</b> {item.branch?.name?.toString()}
                           </p>
                           <p className="text-muted">
                             <b>Department:</b> {item.department}

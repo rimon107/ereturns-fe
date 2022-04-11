@@ -114,8 +114,9 @@ const DashboardBranch = ({
   };
 
   const loadRitDetails = (value) => {
+    setModal(true);
     loadRitDetailsByCode(value);
-    loadRitValidationDataByCode(value);
+    loadRitValidationDataByCode(value).then((res) => setModal(false));
   };
 
   const clearRitValue = () => {
