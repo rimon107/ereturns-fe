@@ -217,11 +217,11 @@ const Register = ({
 
   const clearSelectValue = () => {
     if (selectBranchRef !== undefined) {
-      selectFiRef.current.select.clearValue();
+      selectFiRef.current?.select?.clearValue();
     }
 
     if (selectBranchRef !== undefined) {
-      selectBranchRef.current.select.clearValue();
+      selectBranchRef.current?.select?.clearValue();
     }
   };
 

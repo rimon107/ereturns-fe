@@ -32,90 +32,538 @@ export const dataValidation = async (
       const validate_data = data.slice(2, data.length + 1);
       columns.forEach((element, index) => {
         let column = element.toString().trim();
+        let check_result;
         if (COLUMNS.DATE.includes(column)) {
-          const date_result = checkDateFormat(
+          check_result = checkReportingDate(
             column,
             base_date,
             index,
             validate_data
           );
-          if (!date_result.is_valid) {
+          if (!check_result.is_valid) {
             is_valid = false;
-            error_list.push(...date_result.errors);
+            error_list.push(...check_result.errors);
+          }
+        } else if (COLUMNS.OTHER_DATE_NOT_EMPTY.includes(column)) {
+          check_result = checkDateNotEmpty(column, index, validate_data);
+          if (!check_result.is_valid) {
+            is_valid = false;
+            error_list.push(...check_result.errors);
+          }
+        } else if (COLUMNS.OTHER_DATE_EMPTY.includes(column)) {
+          check_result = checkDateEmpty(column, index, validate_data);
+          if (!check_result.is_valid) {
+            is_valid = false;
+            error_list.push(...check_result.errors);
           }
         } else if (COLUMNS.CCY.includes(column)) {
-          const ccy_result = checkDynamicValidation(
+          check_result = checkDynamicValidation(
             column,
             index,
             validate_data,
             validation_data["currency"]
           );
-          if (!ccy_result.is_valid) {
+          if (!check_result.is_valid) {
             is_valid = false;
-            error_list.push(...ccy_result.errors);
+            error_list.push(...check_result.errors);
           }
         } else if (COLUMNS.FI.includes(column)) {
-          const fi_result = checkFI(
+          check_result = checkFI(
             column,
             user.financial_institute.id,
             index,
             validate_data
           );
-          if (!fi_result.is_valid) {
+          if (!check_result.is_valid) {
             is_valid = false;
-            error_list.push(...fi_result.errors);
+            error_list.push(...check_result.errors);
+          }
+        } else if (COLUMNS.FI_BRANCH.includes(column)) {
+          check_result = checkDynamicValidation(
+            column,
+            index,
+            validate_data,
+            validation_data["branches"]
+          );
+          if (!check_result.is_valid) {
+            is_valid = false;
+            error_list.push(...check_result.errors);
           }
         } else if (COLUMNS.FACILITY_TYPE.includes(column)) {
-          const ccy_result = checkDynamicValidation(
+          check_result = checkDynamicValidation(
             column,
             index,
             validate_data,
             validation_data["FACILITY_TYPE"]
           );
-          if (!ccy_result.is_valid) {
+          if (!check_result.is_valid) {
             is_valid = false;
-            error_list.push(...ccy_result.errors);
+            error_list.push(...check_result.errors);
           }
         } else if (COLUMNS.COA.includes(column)) {
-          const mecoa_result = checkDynamicValidation(
+          check_result = checkDynamicValidation(
             column,
             index,
             validate_data,
             validation_data["coa"]
           );
-          if (!mecoa_result.is_valid) {
+          if (!check_result.is_valid) {
             is_valid = false;
-            error_list.push(...mecoa_result.errors);
+            error_list.push(...check_result.errors);
           }
         } else if (COLUMNS.DECIMAL_EMPTY.includes(column)) {
-          const decimal_empty_result = checkDecimalEmpty(
-            column,
-            index,
-            validate_data
-          );
-          if (!decimal_empty_result.is_valid) {
+          check_result = checkDecimalEmpty(column, index, validate_data);
+          if (!check_result.is_valid) {
             is_valid = false;
-            error_list.push(...decimal_empty_result.errors);
+            error_list.push(...check_result.errors);
           }
         } else if (COLUMNS.DECIMAL_NOT_EMPTY.includes(column)) {
-          const decimal_not_empty_result = checkDecimalNotEmpty(
-            column,
-            index,
-            validate_data
-          );
-          if (!decimal_not_empty_result.is_valid) {
+          check_result = checkDecimalNotEmpty(column, index, validate_data);
+          if (!check_result.is_valid) {
             is_valid = false;
-            error_list.push(...decimal_not_empty_result.errors);
+            error_list.push(...check_result.errors);
+          }
+        } else if (COLUMNS.INTEGER_EMPTY.includes(column)) {
+          check_result = checkIntegerEmpty(column, index, validate_data);
+          if (!check_result.is_valid) {
+            is_valid = false;
+            error_list.push(...check_result.errors);
           }
         } else if (COLUMNS.INTEGER_NOT_EMPTY.includes(column)) {
-          const integer_not_empty_result = checkIntegerNotEmpty(
+          check_result = checkIntegerNotEmpty(column, index, validate_data);
+          if (!check_result.is_valid) {
+            is_valid = false;
+            error_list.push(...check_result.errors);
+          }
+        } else if (COLUMNS.TEXT_EMPTY.includes(column)) {
+          check_result = checkTextEmpty(column, index, validate_data);
+          if (!check_result.is_valid) {
+            is_valid = false;
+            error_list.push(...check_result.errors);
+          }
+        } else if (COLUMNS.TEXT_NOT_EMPTY.includes(column)) {
+          check_result = checkTextNotEmpty(column, index, validate_data);
+          if (!check_result.is_valid) {
+            is_valid = false;
+            error_list.push(...check_result.errors);
+          }
+        } else if (COLUMNS.ECO_SECTOR.includes(column)) {
+          check_result = checkDynamicValidation(
             column,
             index,
-            validate_data
+            validate_data,
+            validation_data["eco_sector"]
           );
-          if (!integer_not_empty_result.is_valid) {
+          if (!check_result.is_valid) {
             is_valid = false;
-            error_list.push(...integer_not_empty_result.errors);
+            error_list.push(...check_result.errors);
+          }
+        } else if (COLUMNS.ECO_PURPOSE.includes(column)) {
+          check_result = checkDynamicValidation(
+            column,
+            index,
+            validate_data,
+            validation_data["eco_purpose"]
+          );
+          if (!check_result.is_valid) {
+            is_valid = false;
+            error_list.push(...check_result.errors);
+          }
+        } else if (COLUMNS.PRODUCT_TYPE.includes(column)) {
+          check_result = checkDynamicValidation(
+            column,
+            index,
+            validate_data,
+            validation_data["product_type"]
+          );
+          if (!check_result.is_valid) {
+            is_valid = false;
+            error_list.push(...check_result.errors);
+          }
+        } else if (COLUMNS.INSTRUMENT_TYPE.includes(column)) {
+          check_result = checkDynamicValidation(
+            column,
+            index,
+            validate_data,
+            validation_data["instrument_type"]
+          );
+          if (!check_result.is_valid) {
+            is_valid = false;
+            error_list.push(...check_result.errors);
+          }
+        } else if (COLUMNS.INVESTOR_ID.includes(column)) {
+          check_result = checkDynamicValidation(
+            column,
+            index,
+            validate_data,
+            validation_data["investor"]
+          );
+          if (!check_result.is_valid) {
+            is_valid = false;
+            error_list.push(...check_result.errors);
+          }
+        } else if (COLUMNS.SECURITY_CODE.includes(column)) {
+          check_result = checkDynamicValidation(
+            column,
+            index,
+            validate_data,
+            validation_data["security_code"]
+          );
+          if (!check_result.is_valid) {
+            is_valid = false;
+            error_list.push(...check_result.errors);
+          }
+        } else if (COLUMNS.INVESTOR_CHANNEL.includes(column)) {
+          check_result = checkDynamicValidation(
+            column,
+            index,
+            validate_data,
+            validation_data["investor_channel"]
+          );
+          if (!check_result.is_valid) {
+            is_valid = false;
+            error_list.push(...check_result.errors);
+          }
+        } else if (COLUMNS.COMPANY.includes(column)) {
+          check_result = checkDynamicValidation(
+            column,
+            index,
+            validate_data,
+            validation_data["company"]
+          );
+          if (!check_result.is_valid) {
+            is_valid = false;
+            error_list.push(...check_result.errors);
+          }
+        } else if (COLUMNS.ENTERPRISE_TYPE.includes(column)) {
+          check_result = checkDynamicValidation(
+            column,
+            index,
+            validate_data,
+            validation_data["enterprise_type"]
+          );
+          if (!check_result.is_valid) {
+            is_valid = false;
+            error_list.push(...check_result.errors);
+          }
+        } else if (COLUMNS.SECTOR_MAJOR_ACTIVITIES.includes(column)) {
+          check_result = checkDynamicValidation(
+            column,
+            index,
+            validate_data,
+            validation_data["sector_major_activities"]
+          );
+          if (!check_result.is_valid) {
+            is_valid = false;
+            error_list.push(...check_result.errors);
+          }
+        } else if (COLUMNS.COUNTRY.includes(column)) {
+          check_result = checkDynamicValidation(
+            column,
+            index,
+            validate_data,
+            validation_data["country"]
+          );
+          if (!check_result.is_valid) {
+            is_valid = false;
+            error_list.push(...check_result.errors);
+          }
+        } else if (COLUMNS.PRODUCT_CODE.includes(column)) {
+          check_result = checkDynamicValidation(
+            column,
+            index,
+            validate_data,
+            validation_data["product_code"]
+          );
+          if (!check_result.is_valid) {
+            is_valid = false;
+            error_list.push(...check_result.errors);
+          }
+        } else if (COLUMNS.PAYREC_PURPOSE.includes(column)) {
+          check_result = checkDynamicEmptyValidation(
+            column,
+            index,
+            validate_data,
+            validation_data["payrec_purpose"]
+          );
+          if (!check_result.is_valid) {
+            is_valid = false;
+            error_list.push(...check_result.errors);
+          }
+        } else if (COLUMNS.UNIT_OF_MEASURE.includes(column)) {
+          check_result = checkDynamicValidation(
+            column,
+            index,
+            validate_data,
+            validation_data["unit_of_measure"]
+          );
+          if (!check_result.is_valid) {
+            is_valid = false;
+            error_list.push(...check_result.errors);
+          }
+        } else if (COLUMNS.REP_TYPE.includes(column)) {
+          check_result = checkDynamicValidation(
+            column,
+            index,
+            validate_data,
+            validation_data["rep_type"]
+          );
+          if (!check_result.is_valid) {
+            is_valid = false;
+            error_list.push(...check_result.errors);
+          }
+        } else if (COLUMNS.SCHEDULED_CODE.includes(column)) {
+          check_result = checkDynamicValidation(
+            column,
+            index,
+            validate_data,
+            validation_data["scheduled_code"]
+          );
+          if (!check_result.is_valid) {
+            is_valid = false;
+            error_list.push(...check_result.errors);
+          }
+        } else if (COLUMNS.TYPE_CODE.includes(column)) {
+          check_result = checkDynamicValidation(
+            column,
+            index,
+            validate_data,
+            validation_data["type_code"]
+          );
+          if (!check_result.is_valid) {
+            is_valid = false;
+            error_list.push(...check_result.errors);
+          }
+        } else if (COLUMNS.COMMODITY.includes(column)) {
+          check_result = checkDynamicEmptyValidation(
+            column,
+            index,
+            validate_data,
+            validation_data["commodity"]
+          );
+          if (!check_result.is_valid) {
+            is_valid = false;
+            error_list.push(...check_result.errors);
+          }
+        } else if (COLUMNS.LEGAL_FORM_OF_ENTERPRISE.includes(column)) {
+          check_result = checkDynamicValidation(
+            column,
+            index,
+            validate_data,
+            validation_data["legal_form_of_enterprise"]
+          );
+          if (!check_result.is_valid) {
+            is_valid = false;
+            error_list.push(...check_result.errors);
+          }
+        } else if (COLUMNS.ENTERPRISE_LOCATION.includes(column)) {
+          check_result = checkDynamicValidation(
+            column,
+            index,
+            validate_data,
+            validation_data["enterprise_location"]
+          );
+          if (!check_result.is_valid) {
+            is_valid = false;
+            error_list.push(...check_result.errors);
+          }
+        } else if (COLUMNS.FELLOW_ENTERPRISE_LOCATION.includes(column)) {
+          check_result = checkDynamicValidation(
+            column,
+            index,
+            validate_data,
+            validation_data["fellow_enterprise_location"]
+          );
+          if (!check_result.is_valid) {
+            is_valid = false;
+            error_list.push(...check_result.errors);
+          }
+        } else if (COLUMNS.COMMON_PARENT_LOCATION.includes(column)) {
+          check_result = checkDynamicValidation(
+            column,
+            index,
+            validate_data,
+            validation_data["common_parent_location"]
+          );
+          if (!check_result.is_valid) {
+            is_valid = false;
+            error_list.push(...check_result.errors);
+          }
+        } else if (COLUMNS.INSTRUMENT_CLASSIFICATION.includes(column)) {
+          check_result = checkDynamicValidation(
+            column,
+            index,
+            validate_data,
+            validation_data["instrument_classification"]
+          );
+          if (!check_result.is_valid) {
+            is_valid = false;
+            error_list.push(...check_result.errors);
+          }
+        } else if (COLUMNS.CREDITOR_TYPE.includes(column)) {
+          check_result = checkDynamicValidation(
+            column,
+            index,
+            validate_data,
+            validation_data["creditor_type"]
+          );
+          if (!check_result.is_valid) {
+            is_valid = false;
+            error_list.push(...check_result.errors);
+          }
+        } else if (COLUMNS.SME_CATEGORY.includes(column)) {
+          check_result = checkDynamicValidation(
+            column,
+            index,
+            validate_data,
+            validation_data["sme_category"]
+          );
+          if (!check_result.is_valid) {
+            is_valid = false;
+            error_list.push(...check_result.errors);
+          }
+        } else if (COLUMNS.SME_SUB_CATEGORY.includes(column)) {
+          check_result = checkDynamicValidation(
+            column,
+            index,
+            validate_data,
+            validation_data["sme_sub_category"]
+          );
+          if (!check_result.is_valid) {
+            is_valid = false;
+            error_list.push(...check_result.errors);
+          }
+        } else if (COLUMNS.LOAN_SEGREGATION.includes(column)) {
+          check_result = checkDynamicValidation(
+            column,
+            index,
+            validate_data,
+            validation_data["loan_segregation"]
+          );
+          if (!check_result.is_valid) {
+            is_valid = false;
+            error_list.push(...check_result.errors);
+          }
+        } else if (COLUMNS.ACCOUNT_NUMBER.includes(column)) {
+          check_result = checkDynamicTextValidation(
+            column,
+            index,
+            validate_data,
+            validation_data["account_number"]
+          );
+          if (!check_result.is_valid) {
+            is_valid = false;
+            error_list.push(...check_result.errors);
+          }
+        } else if (COLUMNS.GENDER_CODE.includes(column)) {
+          check_result = checkDynamicValidation(
+            column,
+            index,
+            validate_data,
+            validation_data["gender_code"]
+          );
+          if (!check_result.is_valid) {
+            is_valid = false;
+            error_list.push(...check_result.errors);
+          }
+        } else if (COLUMNS.INDUSTRY_SCALE_ID.includes(column)) {
+          check_result = checkDynamicValidation(
+            column,
+            index,
+            validate_data,
+            validation_data["industry_scale_id"]
+          );
+          if (!check_result.is_valid) {
+            is_valid = false;
+            error_list.push(...check_result.errors);
+          }
+        } else if (COLUMNS.COLLATERAL_ID.includes(column)) {
+          check_result = checkDynamicValidation(
+            column,
+            index,
+            validate_data,
+            validation_data["collateral_id"]
+          );
+          if (!check_result.is_valid) {
+            is_valid = false;
+            error_list.push(...check_result.errors);
+          }
+        } else if (COLUMNS.LOAN_CLASS_ID.includes(column)) {
+          check_result = checkDynamicValidation(
+            column,
+            index,
+            validate_data,
+            validation_data["loan_class_id"]
+          );
+          if (!check_result.is_valid) {
+            is_valid = false;
+            error_list.push(...check_result.errors);
+          }
+        } else if (COLUMNS.FREQUENCY_INDICATOR_CODE.includes(column)) {
+          check_result = checkDynamicValidation(
+            column,
+            index,
+            validate_data,
+            validation_data["freq_ind_code"]
+          );
+          if (!check_result.is_valid) {
+            is_valid = false;
+            error_list.push(...check_result.errors);
+          }
+        } else if (COLUMNS.DEBIT_CREDIT_INDICATOR_CODE.includes(column)) {
+          check_result = checkDynamicValidation(
+            column,
+            index,
+            validate_data,
+            validation_data["debit_card_ind_code"]
+          );
+          if (!check_result.is_valid) {
+            is_valid = false;
+            error_list.push(...check_result.errors);
+          }
+        } else if (COLUMNS.BANKING_CLASS.includes(column)) {
+          check_result = checkDynamicTextValidation(
+            column,
+            index,
+            validate_data,
+            validation_data["banking_class"]
+          );
+          if (!check_result.is_valid) {
+            is_valid = false;
+            error_list.push(...check_result.errors);
+          }
+        } else if (COLUMNS.AGING_RANGE_ID.includes(column)) {
+          check_result = checkDynamicValidation(
+            column,
+            index,
+            validate_data,
+            validation_data["aging_range_id"]
+          );
+          if (!check_result.is_valid) {
+            is_valid = false;
+            error_list.push(...check_result.errors);
+          }
+        } else if (COLUMNS.ACCOUNT_TYPE_CODE.includes(column)) {
+          check_result = checkDynamicValidation(
+            column,
+            index,
+            validate_data,
+            validation_data["account_type_code"]
+          );
+          if (!check_result.is_valid) {
+            is_valid = false;
+            error_list.push(...check_result.errors);
+          }
+        } else if (COLUMNS.REPORTING_AREA.includes(column)) {
+          check_result = checkDynamicValidation(
+            column,
+            index,
+            validate_data,
+            validation_data["reporting_area"]
+          );
+          if (!check_result.is_valid) {
+            is_valid = false;
+            error_list.push(...check_result.errors);
           }
         } else {
           if (column.length !== 0) {
@@ -266,6 +714,15 @@ export const firstColumnValidate = (fi, branch, rit, data) => {
   return result;
 };
 
+export const getDecimalRegex = () => new RegExp(/^-?\d+(\.\d{1,16})?$/);
+export const getIntegerRegex = () => new RegExp(/^\d+$/);
+export const getTextRegex = () => new RegExp(/\w/g, "i");
+export const getDateRegex = () =>
+  new RegExp(
+    /^\d?\d-(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)-\d/,
+    "i"
+  );
+
 export const checkDecimalEmpty = (column, i, data) => {
   console.log("checking " + column + "...");
   let result = {};
@@ -273,7 +730,8 @@ export const checkDecimalEmpty = (column, i, data) => {
   let error_msg;
   let row;
   let errors = [];
-  const format = new RegExp(/^-?\d+(\.\d{1,4})?$/);
+  // const format = new RegExp(/^-?\d+(\.\d{1,6})?$/);
+  const format = getDecimalRegex();
 
   data.forEach((item, index) => {
     row = index + 3;
@@ -300,7 +758,8 @@ export const checkDecimalNotEmpty = (column, i, data) => {
   let error_msg;
   let row;
   let errors = [];
-  const format = new RegExp(/^\d+(\.\d{1,4})?$/);
+  // const format = new RegExp(/^\d+(\.\d{1,6})?$/);
+  const format = getDecimalRegex();
 
   data.forEach((item, index) => {
     row = index + 3;
@@ -315,6 +774,34 @@ export const checkDecimalNotEmpty = (column, i, data) => {
       if (item.length !== 1) {
         is_valid = false;
         error_msg = "Error at row " + row + ". Empty " + column + ".";
+        errors.push(error_msg);
+      }
+    }
+  });
+
+  result["is_valid"] = is_valid;
+  result["errors"] = errors;
+
+  return result;
+};
+
+export const checkIntegerEmpty = (column, i, data) => {
+  console.log("checking " + column + "...");
+  let result = {};
+  let is_valid = true;
+  let error_msg;
+  let row;
+  let errors = [];
+  // const format = new RegExp(/^\d+$/);
+  const format = getIntegerRegex();
+
+  data.forEach((item, index) => {
+    row = index + 3;
+    if (item[i]) {
+      if (!format.test(item[i].toString())) {
+        is_valid = false;
+        error_msg =
+          "Error at row " + row + ". Please provide correct " + column + ".";
         errors.push(error_msg);
       }
     }
@@ -333,7 +820,8 @@ export const checkIntegerNotEmpty = (column, i, data) => {
   let error_msg;
   let row;
   let errors = [];
-  const format = new RegExp(/^\d+$/);
+  // const format = new RegExp(/^\d+$/);
+  const format = getIntegerRegex();
 
   data.forEach((item, index) => {
     row = index + 3;
@@ -359,8 +847,70 @@ export const checkIntegerNotEmpty = (column, i, data) => {
   return result;
 };
 
-export const checkDateFormat = (column, base_date, i, data) => {
-  console.log("checking Date Format...");
+export const checkTextEmpty = (column, i, data) => {
+  console.log("checking " + column + "...");
+  let result = {};
+  let is_valid = true;
+  let error_msg;
+  let row;
+  let errors = [];
+  // const format = new RegExp(/\w/g, "i");
+  const format = getTextRegex();
+
+  data.forEach((item, index) => {
+    row = index + 3;
+    if (item[i]) {
+      if (!format.test(item[i].toString())) {
+        is_valid = false;
+        error_msg =
+          "Error at row " + row + ". Please provide correct " + column + ".";
+        errors.push(error_msg);
+      }
+    }
+  });
+
+  result["is_valid"] = is_valid;
+  result["errors"] = errors;
+
+  return result;
+};
+
+export const checkTextNotEmpty = (column, i, data) => {
+  console.log("checking " + column + "...");
+  let result = {};
+  let is_valid = true;
+  let error_msg;
+  let row;
+  let errors = [];
+  // const format = new RegExp(/\w/g, "i");
+  const format = getTextRegex();
+
+  data.forEach((item, index) => {
+    row = index + 3;
+    if (item[i]) {
+      if (!format.test(item[i].toString())) {
+        is_valid = false;
+        error_msg =
+          "Error at row " + row + ". Please provide correct " + column + ".";
+        errors.push(error_msg);
+      }
+    } else {
+      if (item.length !== 1) {
+        is_valid = false;
+        error_msg = "Error at row " + row + ". Empty " + column + ".";
+        errors.push(error_msg);
+      }
+    }
+  });
+
+  result["is_valid"] = is_valid;
+  result["errors"] = errors;
+
+  return result;
+};
+
+export const checkReportingDate = (column, base_date, i, data) => {
+  console.log("checking " + column + "...");
   const date = new Date(base_date);
   const formatted_date =
     date.toLocaleDateString("en-US", { day: "2-digit" }) +
@@ -368,10 +918,12 @@ export const checkDateFormat = (column, base_date, i, data) => {
     date.toLocaleDateString("en-US", { month: "short" }) +
     "-" +
     date.toLocaleDateString("en-US", { year: "2-digit" });
-  const format = new RegExp(
-    /^\d?\d-(Jan|Feb|Mar|Apr|May|Jun|July|Aug|Sep|Oct|Nov|Dec)-\d/,
-    "i"
-  );
+  // const format = new RegExp(
+  //   /^\d?\d-(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)-\d/,
+  //   "i"
+  // );
+  const format = getDateRegex();
+
   let result = {};
   let is_valid = true;
   let error_msg;
@@ -413,6 +965,78 @@ export const checkDateFormat = (column, base_date, i, data) => {
   return result;
 };
 
+export const checkDateNotEmpty = (column, i, data) => {
+  console.log("checking " + column + "...");
+
+  let result = {};
+  let is_valid = true;
+  let error_msg;
+  let row;
+  let errors = [];
+
+  // const format = new RegExp(
+  //   /^\d?\d-(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)-\d/,
+  //   "i"
+  // );
+
+  const format = getDateRegex();
+
+  data.forEach((item, index) => {
+    row = index + 3;
+    if (item[i]) {
+      if (!format.test(item[i])) {
+        is_valid = false;
+        error_msg = "Error at row " + row + ". Wrong " + column + " format.";
+        errors.push(error_msg);
+      }
+    } else {
+      if (item.length !== 1) {
+        is_valid = false;
+        error_msg = "Error at row " + row + ". Empty " + column + ".";
+        errors.push(error_msg);
+      }
+    }
+  });
+
+  result["is_valid"] = is_valid;
+  result["errors"] = errors;
+
+  return result;
+};
+
+export const checkDateEmpty = (column, i, data) => {
+  console.log("checking " + column + "...");
+
+  let result = {};
+  let is_valid = true;
+  let error_msg;
+  let row;
+  let errors = [];
+
+  // const format = new RegExp(
+  //   /^\d?\d-(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)-\d/,
+  //   "i"
+  // );
+
+  const format = getDateRegex();
+
+  data.forEach((item, index) => {
+    row = index + 3;
+    if (item[i]) {
+      if (!format.test(item[i])) {
+        is_valid = false;
+        error_msg = "Error at row " + row + ". Wrong " + column + " format.";
+        errors.push(error_msg);
+      }
+    }
+  });
+
+  result["is_valid"] = is_valid;
+  result["errors"] = errors;
+
+  return result;
+};
+
 export const checkDynamicValidation = (column, i, data, validation_data) => {
   console.log("checking " + column + "...");
   let result = {};
@@ -420,7 +1044,93 @@ export const checkDynamicValidation = (column, i, data, validation_data) => {
   let error_msg;
   let row;
   let errors = [];
-  const format = new RegExp(/^\d+$/);
+  const format = getIntegerRegex();
+
+  data.forEach((item, index) => {
+    row = index + 3;
+    if (item[i]) {
+      if (!format.test(item[i].toString())) {
+        is_valid = false;
+        error_msg =
+          "Error at row " + row + ". Please provide correct " + column + ".";
+        errors.push(error_msg);
+      }
+      if (validation_data.length > 0) {
+        if (!validation_data.includes(parseInt(item[i]))) {
+          is_valid = false;
+          error_msg =
+            "Error at row " + row + ". Please provide correct " + column + ".";
+          errors.push(error_msg);
+        }
+      }
+    } else {
+      if (item.length !== 1) {
+        is_valid = false;
+        error_msg = "Error at row " + row + ". Empty " + column + ".";
+        errors.push(error_msg);
+      }
+    }
+  });
+
+  result["is_valid"] = is_valid;
+  result["errors"] = errors;
+
+  return result;
+};
+
+export const checkDynamicEmptyValidation = (
+  column,
+  i,
+  data,
+  validation_data
+) => {
+  console.log("checking " + column + "...");
+  let result = {};
+  let is_valid = true;
+  let error_msg;
+  let row;
+  let errors = [];
+  const format = getIntegerRegex();
+
+  data.forEach((item, index) => {
+    row = index + 3;
+    if (item[i]) {
+      if (!format.test(item[i].toString())) {
+        is_valid = false;
+        error_msg =
+          "Error at row " + row + ". Please provide correct " + column + ".";
+        errors.push(error_msg);
+      }
+      if (validation_data.length > 0) {
+        if (!validation_data.includes(parseInt(item[i]))) {
+          is_valid = false;
+          error_msg =
+            "Error at row " + row + ". Please provide correct " + column + ".";
+          errors.push(error_msg);
+        }
+      }
+    }
+  });
+
+  result["is_valid"] = is_valid;
+  result["errors"] = errors;
+
+  return result;
+};
+
+export const checkDynamicTextValidation = (
+  column,
+  i,
+  data,
+  validation_data
+) => {
+  console.log("checking " + column + "...");
+  let result = {};
+  let is_valid = true;
+  let error_msg;
+  let row;
+  let errors = [];
+  const format = getTextRegex();
 
   data.forEach((item, index) => {
     row = index + 3;
@@ -462,7 +1172,9 @@ export const checkFI = (column, fi, i, data) => {
   let row;
   let d_fi;
   let errors = [];
-  const format = new RegExp(/^\d+$/);
+
+  const format = getIntegerRegex();
+
   data.forEach((item, index) => {
     row = index + 3;
     d_fi = item[i];
