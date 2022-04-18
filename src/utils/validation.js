@@ -79,7 +79,7 @@ export const dataValidation = async (
             error_list.push(...check_result.errors);
           }
         } else if (COLUMNS.FI_BRANCH.includes(column)) {
-          check_result = checkDynamicValidation(
+          check_result = checkFiBranch(
             column,
             index,
             validate_data,
@@ -565,11 +565,85 @@ export const dataValidation = async (
             is_valid = false;
             error_list.push(...check_result.errors);
           }
+        } else if (COLUMNS.LAWSUIT_TYPE_CODE.includes(column)) {
+          check_result = checkDynamicValidation(
+            column,
+            index,
+            validate_data,
+            validation_data["lawsuit_type_code"]
+          );
+          if (!check_result.is_valid) {
+            is_valid = false;
+            error_list.push(...check_result.errors);
+          }
+        } else if (COLUMNS.CASE_TYPE_CODE.includes(column)) {
+          check_result = checkDynamicValidation(
+            column,
+            index,
+            validate_data,
+            validation_data["case_type_code"]
+          );
+          if (!check_result.is_valid) {
+            is_valid = false;
+            error_list.push(...check_result.errors);
+          }
+        } else if (COLUMNS.FI_LIST.includes(column)) {
+          check_result = checkDynamicValidation(
+            column,
+            index,
+            validate_data,
+            validation_data["fis"]
+          );
+          if (!check_result.is_valid) {
+            is_valid = false;
+            error_list.push(...check_result.errors);
+          }
+        } else if (COLUMNS.PERSPECTIVE_CODE.includes(column)) {
+          check_result = checkDynamicValidation(
+            column,
+            index,
+            validate_data,
+            validation_data["perspective_code"]
+          );
+          if (!check_result.is_valid) {
+            is_valid = false;
+            error_list.push(...check_result.errors);
+          }
+        } else if (COLUMNS.TRANSACTION_TYPE.includes(column)) {
+          check_result = checkDynamicValidation(
+            column,
+            index,
+            validate_data,
+            validation_data["transaction_type"]
+          );
+          if (!check_result.is_valid) {
+            is_valid = false;
+            error_list.push(...check_result.errors);
+          }
+        } else if (COLUMNS.LOAN_STATUS.includes(column)) {
+          check_result = checkDynamicValidation(
+            column,
+            index,
+            validate_data,
+            validation_data["loan_status"]
+          );
+          if (!check_result.is_valid) {
+            is_valid = false;
+            error_list.push(...check_result.errors);
+          }
         } else {
           if (column.length !== 0) {
-            is_valid = false;
-            let error = column + " column not found in the validation list.";
-            error_list.push(error);
+            const except_list = [
+              "Figure indication",
+              "Data category",
+              "Field Description",
+              "ISLAMIC",
+            ];
+            if (!except_list.includes(column)) {
+              is_valid = false;
+              let error = column + " column not found in the validation list.";
+              error_list.push(error);
+            }
           }
         }
       });
@@ -1184,6 +1258,48 @@ export const checkFI = (column, fi, i, data) => {
         error_msg =
           "Error at row " + row + ". Please provide correct " + column + ".";
         errors.push(error_msg);
+      }
+    } else {
+      if (item.length !== 1) {
+        is_valid = false;
+        error_msg = "Error at row " + row + ". Empty " + column + ".";
+        errors.push(error_msg);
+      }
+    }
+  });
+
+  result["is_valid"] = is_valid;
+  result["errors"] = errors;
+
+  return result;
+};
+
+export const checkFiBranch = (column, i, data, validation_data) => {
+  console.log("checking " + column + "...");
+  let result = {};
+  let is_valid = true;
+  let error_msg;
+  let row;
+  let errors = [];
+  validation_data.push(9999);
+  const format = getIntegerRegex();
+
+  data.forEach((item, index) => {
+    row = index + 3;
+    if (item[i]) {
+      if (!format.test(item[i].toString())) {
+        is_valid = false;
+        error_msg =
+          "Error at row " + row + ". Please provide correct " + column + ".";
+        errors.push(error_msg);
+      }
+      if (validation_data.length > 0) {
+        if (!validation_data.includes(parseInt(item[i]))) {
+          is_valid = false;
+          error_msg =
+            "Error at row " + row + ". Please provide correct " + column + ".";
+          errors.push(error_msg);
+        }
       }
     } else {
       if (item.length !== 1) {

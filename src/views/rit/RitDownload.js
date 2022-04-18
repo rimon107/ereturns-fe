@@ -59,7 +59,7 @@ const RitDownload = () => {
                 <tbody>
                   {default_files?.map((file, index) => (
                     // <option key={x.id} value={x.id}>{x.name}</option>
-                    <tr>
+                    <tr key={index}>
                       <td>
                         <p>
                           <code className="highlighter-rouge">{index + 1}</code>
@@ -133,7 +133,7 @@ const RitDownload = () => {
                 </thead>
                 <tbody>
                   {department_files?.map((file, index) => (
-                    <tr>
+                    <tr key={index}>
                       <td>
                         <p>
                           <code className="highlighter-rouge">{index + 1}</code>
