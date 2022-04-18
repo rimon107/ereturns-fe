@@ -446,7 +446,7 @@ const DashboardBranch = ({
 
                 <CFormGroup row>
                   <CLabel col md="3" htmlFor="file">
-                    File input
+                    File
                   </CLabel>
                   <CCol xs="12" md="9">
                     <CInputFile
